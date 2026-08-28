@@ -4,7 +4,7 @@ const CONFIG = {
     instagramUsername: 'underchargers',
     facebookUrl: 'https://www.facebook.com/underchargersofficial',
     messengerUsername: 'underchargersofficial',
-    tiktokUsername: 'underchargers',
+    tiktokUsername: '@underchargers',
     phone: '+639179620045',
     viberPhone: '+639179620045',
     whatsappPhone: '639179620045'
