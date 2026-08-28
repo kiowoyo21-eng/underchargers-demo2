@@ -128,7 +128,17 @@ function appFirst(appUrl,webUrl){
 function openChannel(type){const s=CONFIG.social;switch(type){
   case 'instagram': return isIOS() ? (window.location.href=`https://www.instagram.com/${s.instagramUsername}/`) : appFirst(`instagram://user?username=${s.instagramUsername}`,`https://www.instagram.com/${s.instagramUsername}/`);
   case 'facebook': return isIOS()||isAndroid()?appFirst(`fb://facewebmodal/f?href=${encodeURIComponent(s.facebookUrl)}`,s.facebookUrl):window.location.href=s.facebookUrl;
-  case 'messenger': { const m=`https://m.me/${s.messengerUsername}`; return isIOS() ? (window.location.href=m) : appFirst(`fb-messenger://user-thread/${s.messengerUsername}`,m); }
+  case 'messenger': {
+    const messengerWeb=`https://m.me/${s.messengerUsername}`;
+    // iPhone/iPad: use Meta's HTTPS universal link directly from the user tap.
+    // Do not try fb-messenger:// first on iOS; Safari/Meta handles the Messenger handoff.
+    if(isIOS()){
+      const iosMessenger=`fb-messenger-public://user-thread/514453112391852?intent_trigger=mme&source_id=1441792&nav=discover`;
+      return appFirst(iosMessenger,messengerWeb);
+    }
+    // Android: retain the native deep link that already opens the correct conversation.
+    return appFirst(`fb-messenger://user-thread/${s.messengerUsername}`,messengerWeb);
+  }
   case 'tiktok': return appFirst(`snssdk1233://user/profile/${s.tiktokUsername}`,`https://www.tiktok.com/@${s.tiktokUsername}`);
   case 'sms': return window.location.href=`sms:${s.phone}${isIOS()?'&':'?'}body=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`;
   case 'viber': return appFirst(`viber://chat?number=${encodeURIComponent(s.viberPhone)}`,'https://www.viber.com/');
