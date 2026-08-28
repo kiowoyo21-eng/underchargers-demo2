@@ -97,7 +97,7 @@ function renderReviewGroup(animate=true){
   if(animate) reviewGrid.classList.add('is-changing');
   const doRender=()=>{
     const start=reviewGroup*3;
-    reviewGrid.innerHTML=reviews.slice(start,start+3).map(r=>`<article class="review-card"><div class="stars">★★★★★</div><blockquote>“${r.text}”</blockquote><div class="review-person"><strong>${r.name}</strong><span>${r.branch}</span></div></article>`).join('');
+    reviewGrid.innerHTML=reviews.slice(start,start+3).map(r=>{const initials=r.name.split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();return `<article class="review-card"><div class="stars">★★★★★</div><blockquote>“${r.text}”</blockquote><div class="review-person"><div class="testimonial-avatar">${initials}</div><div class="review-person-copy"><strong>${r.name}</strong><span>${r.branch}</span></div></div></article>`}).join('');
     if(reviewCount) reviewCount.textContent=String(reviewGroup+1).padStart(2,'0')+' / 03';
     requestAnimationFrame(()=>reviewGrid.classList.remove('is-changing'));
   };
@@ -615,4 +615,32 @@ document.querySelectorAll('a').forEach(a=>{
   };
   document.addEventListener('DOMContentLoaded', setup);
   window.addEventListener('uc:showcase-rebuilt', setup);
+})();
+
+
+/* V8.3 franchise inclusion modal: actual clickable controls with X / backdrop / Escape. */
+(() => {
+  const modal=document.getElementById('inclusion-modal');
+  if(!modal) return;
+  const title=modal.querySelector('#inclusion-modal-title');
+  const text=modal.querySelector('#inclusion-modal-text');
+  const image=modal.querySelector('#inclusion-modal-image');
+  const closeBtn=modal.querySelector('.inclusion-modal-close');
+  const items=[
+    ['Basic tools & equipment','Core workshop tools and equipment form part of the operating setup.','1cvzjKzr6Djd2vdy90ZonkTxl2TVc3oah'],
+    ['Book of Standards','The operating system documents the service and brand standards used across the network.','1tb4kmBkcLSQdeEVEBaUGa3bEuP54W5Gh'],
+    ['Initial training','Initial training helps the franchise team prepare for Underchargers operating standards.','1ZwZeKNDNMUboi0AUpVyj_lnrbnx8gV2J'],
+    ['Endorsed mechanics','Staffing support includes access to endorsed mechanics for branch operations.','1wAa3RotOSS-QsmhK4Et6ibyX_x9zxQvk'],
+    ['Supplier network','The franchise system includes access to the established supplier network.','1D7a7BPWKk4EVEMp2QtuICdS-i2_4Gxwn'],
+    ['Marketing support','Brand and marketing support helps the branch launch and communicate consistently.','14oMnTqdnYDmusI5qPEuw6WohO9gPmJ9Q']
+  ];
+  const close=()=>{modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';};
+  document.querySelectorAll('.inclusion-item').forEach((btn,i)=>btn.addEventListener('click',()=>{
+    const d=items[i]||items[0]; title.textContent=d[0]; text.textContent=d[1];
+    image.src=`https://drive.google.com/thumbnail?id=${d[2]}&sz=w1800`; image.alt=`Underchargers — ${d[0]}`;
+    modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';closeBtn.focus();
+  }));
+  closeBtn?.addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('is-open'))close();});
 })();
