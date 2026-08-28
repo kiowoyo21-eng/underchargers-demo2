@@ -51,7 +51,7 @@ function loadLocalImage(el, name, extraGradient='linear-gradient(180deg,rgba(0,0
   };
   img.src = src;
 }
-document.querySelectorAll('.media[data-image]').forEach(el => loadLocalImage(el, el.dataset.image));
+document.querySelectorAll('.media[data-image]').forEach(el => { if (!String(el.dataset.image||'').toLowerCase().startsWith('branch-')) loadLocalImage(el, el.dataset.image); });
 
 // Engine brand photo selector.
 const enginePhoto = document.getElementById('engine-photo');
@@ -648,27 +648,68 @@ document.querySelectorAll('a').forEach(a=>{
 })();
 
 
-/* V8.4 hero media hardening: exact synced filename + exact Drive ID fallback. */
+/* V8.5 hero media: direct video first, then Drive preview fallback.
+   Direct Drive downloads can be blocked by CORP in Chromium; the preview iframe
+   is an embed-safe fallback, while the poster prevents a black hero. */
 (() => {
   const hero=document.querySelector('.home-hero .hero-video');
-  if(!hero) return;
+  const media=document.querySelector('.home-hero .hero-media');
+  const preview=document.querySelector('.home-hero .hero-drive-preview');
+  if(!hero||!media||!preview) return;
   const id='1ZXaIgjmaovs3SDMJewGOpYwCuIIr0UnB';
-  const sources=[
+  const direct=[
     `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`,
     `https://drive.google.com/uc?export=download&id=${id}`
   ];
-  let fallbackIndex=0;
-  const tryPlay=()=>{hero.muted=true;hero.defaultMuted=true;const p=hero.play();if(p&&p.catch)p.catch(()=>{});};
-  const useNext=()=>{
-    if(fallbackIndex>=sources.length) return;
-    const next=sources[fallbackIndex++];
-    if(hero.src!==next){hero.src=next;hero.load();}
-    tryPlay();
+  let i=0, settled=false;
+  const showPreview=()=>{
+    if(settled) return;
+    settled=true;
+    preview.src=`https://drive.google.com/file/d/${id}/preview?autoplay=1`;
+    media.classList.add('use-drive-preview');
   };
-  hero.addEventListener('loadeddata',tryPlay);
-  hero.addEventListener('canplay',tryPlay);
-  hero.addEventListener('error',useNext);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)tryPlay();});
-  window.addEventListener('pageshow',tryPlay);
-  setTimeout(()=>{if(hero.readyState<2) useNext(); else tryPlay();},2200);
+  const play=()=>{
+    hero.muted=true; hero.defaultMuted=true;
+    const p=hero.play(); if(p&&p.catch) p.catch(()=>{});
+  };
+  const next=()=>{
+    if(i>=direct.length){ showPreview(); return; }
+    hero.src=direct[i++]; hero.load(); play();
+  };
+  hero.addEventListener('loadeddata',()=>{ if(hero.videoWidth>0){settled=true;media.classList.remove('use-drive-preview');play();} },{passive:true});
+  hero.addEventListener('canplay',()=>{ if(hero.videoWidth>0){settled=true;media.classList.remove('use-drive-preview');play();} },{passive:true});
+  hero.addEventListener('error',()=>{ if(!settled) next(); });
+  next();
+  setTimeout(()=>{ if(!settled || hero.readyState<2) showPreview(); },1800);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!media.classList.contains('use-drive-preview'))play();});
+})();
+
+/* V8.5 image lightbox — service, award, showcase and branch photos. */
+(() => {
+  const box=document.getElementById('image-lightbox');
+  const img=document.getElementById('image-lightbox-img');
+  const caption=document.getElementById('image-lightbox-caption');
+  const closeBtn=box?.querySelector('.image-lightbox-close');
+  if(!box||!img||!caption||!closeBtn) return;
+  let lastFocus=null;
+  const cleanUrl=u=>String(u||'').replace(/^url\(["']?|["']?\)$/g,'');
+  const open=(src,alt='')=>{
+    if(!src) return;
+    lastFocus=document.activeElement;
+    img.src=src; img.alt=alt||'Underchargers photo'; caption.textContent=alt||'';
+    box.classList.add('is-open'); box.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; closeBtn.focus();
+  };
+  const close=()=>{
+    box.classList.remove('is-open'); box.setAttribute('aria-hidden','true'); img.removeAttribute('src'); document.body.style.overflow='';
+    if(lastFocus&&lastFocus.focus) lastFocus.focus();
+  };
+  document.addEventListener('click',e=>{
+    const photo=e.target.closest('.service-image-frame img,.awards-visual img,.showcase-media-item img');
+    if(photo){e.preventDefault();open(photo.currentSrc||photo.src,photo.alt);return;}
+    const branch=e.target.closest('.branch-media.has-drive-image');
+    if(branch){const bg=getComputedStyle(branch).backgroundImage;const m=bg.match(/url\(["']?(.+?)["']?\)/);if(m)open(m[1],branch.closest('.branch-hero')?.querySelector('h3')?.textContent||'Underchargers branch');}
+  });
+  closeBtn.addEventListener('click',close);
+  box.addEventListener('click',e=>{if(e.target===box)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('is-open'))close();});
 })();

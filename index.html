@@ -35,12 +35,15 @@
 </aside>
 <main>
 <section class="home-hero" id="home">
-  <video class="hero-video" autoplay muted loop playsinline preload="auto" data-cms-media-key="website_video_hero_video" data-cms-filename="hero-video.mp4" src="https://drive.usercontent.google.com/download?id=1ZXaIgjmaovs3SDMJewGOpYwCuIIr0UnB&export=download&confirm=t"></video>
+  <div class="hero-media" aria-hidden="true">
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="https://drive.google.com/thumbnail?id=1ZXaIgjmaovs3SDMJewGOpYwCuIIr0UnB&sz=w2400" data-cms-media-key="website_video_hero_video" data-cms-filename="hero-video.mp4"></video>
+    <iframe class="hero-drive-preview" title="" tabindex="-1" allow="autoplay; fullscreen" referrerpolicy="no-referrer" aria-hidden="true"></iframe>
+  </div>
   <div class="hero-overlay"></div>
   <div class="hero-content section reveal">
     <p class="eyebrow">UNDERCHARGERS</p>
     <h1>FIRST-CLASS<br/>PERFORMANCE.</h1>
-    <p class="hero-copy">Precision diagnostics, honest service, and automotive care built around the concern you actually feel.</p>
+    <p class="hero-copy"><strong>Don’t let engine issues stall your progress. Keep moving forward with confidence.</strong><br/>Book an appointment with our mobile mechanics and get your car back in top shape!</p>
     <div class="hero-actions"><a class="btn btn-gold" href="#book-now">Book Now</a><a class="btn btn-ghost" data-channel="messenger" href="#">Consult Our Expert</a></div>
   </div>
 </section>
@@ -201,6 +204,11 @@
 
 <div class="inclusion-modal" id="inclusion-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="inclusion-modal-title"><div class="inclusion-modal-card"><button type="button" class="inclusion-modal-close" aria-label="Close">×</button><div class="inclusion-modal-media"><img id="inclusion-modal-image" alt=""/></div><div class="inclusion-modal-copy"><p class="eyebrow">FRANCHISE INCLUSION</p><h3 id="inclusion-modal-title"></h3><p id="inclusion-modal-text"></p></div></div></div>
 </main>
+<div class="image-lightbox" id="image-lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="image-lightbox-close" type="button" aria-label="Close image viewer">×</button>
+  <figure class="image-lightbox-inner"><img id="image-lightbox-img" alt=""/><figcaption id="image-lightbox-caption"></figcaption></figure>
+</div>
+
 <footer class="footer">
 <div class="footer-statement"><img alt="Underchargers" class="footer-logo" data-cms-media-key="brand_logo" data-cms-filename="logo.png" src="https://drive.google.com/thumbnail?id=1_ueF7p01Qndgqq9qR_wyUQC_AE4RgMpF&sz=w1200"/><h2>FIRST-CLASS<br/>PERFORMANCE.</h2><a class="btn btn-gold" href="#book-now">Book Now</a></div>
 <div class="footer-grid">
