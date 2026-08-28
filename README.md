@@ -1,14 +1,3 @@
-# Underchargers V8 — Code Only
+Underchargers V8.1 — code-only media loading fix.
 
-Static website files only. No photos or videos are bundled in this package.
-
-Media is loaded from the Underchargers Google Drive / Google Sheets CMS through the deployed Apps Script API.
-
-Files:
-- index.html
-- styles.css
-- script.js
-- thank-you.html
-
-CMS endpoint is configured in script.js.
-Run `syncAllWebsiteMedia()` in Apps Script after adding or changing Drive media.
+Media remains hosted in Google Drive and resolved from the Apps Script CMS. Images use the Drive thumbnail endpoint with a googleusercontent fallback; videos use Drive usercontent/download with fallback. No bundled image/video assets are included.

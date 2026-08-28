@@ -424,13 +424,41 @@ document.querySelectorAll('a').forEach(a=>{
   const endpoint = window.UC_CMS_ENDPOINT;
   if (!endpoint) return;
 
-  const driveDirect = (item, field = 'drive_url') => {
+  const extractDriveId = value => {
+    const raw = String(value || '');
+    const match = raw.match(/\/d\/([\w-]+)/) || raw.match(/[?&]id=([\w-]+)/) || raw.match(/^([\w-]{20,})$/);
+    return match ? match[1] : '';
+  };
+
+  // Google Drive's old `uc?export=view` endpoint is unreliable for direct browser embeds.
+  // Images use Drive's thumbnail endpoint; videos use the public file-content endpoint.
+  const driveDirect = (item, field = 'drive_url', mediaType = '') => {
     if (!item) return '';
-    return item[field + '_view_url'] || (() => {
-      const raw = item[field] || '';
-      const m = String(raw).match(/\/d\/([\w-]+)/) || String(raw).match(/[?&]id=([\w-]+)/);
-      return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : raw;
-    })();
+    const id = item[field + '_id'] || extractDriveId(item[field]) || extractDriveId(item[field + '_view_url']);
+    if (!id) return item[field] || '';
+    const type = String(mediaType || item.media_type || '').toLowerCase();
+    if (type === 'video') {
+      return `https://drive.usercontent.google.com/download?id=${encodeURIComponent(id)}&export=download&confirm=t`;
+    }
+    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w2400`;
+  };
+
+  const installMediaFallbacks = el => {
+    if (!el) return;
+    const id = extractDriveId(el.src || el.currentSrc || '');
+    if (!id) return;
+    if (el.tagName === 'IMG') {
+      el.addEventListener('error', function retryImage() {
+        el.removeEventListener('error', retryImage);
+        el.src = `https://lh3.googleusercontent.com/d/${encodeURIComponent(id)}=w2400`;
+      }, { once: true });
+    } else if (el.tagName === 'VIDEO') {
+      el.addEventListener('error', function retryVideo() {
+        el.removeEventListener('error', retryVideo);
+        el.src = `https://drive.google.com/uc?export=download&id=${encodeURIComponent(id)}`;
+        el.load();
+      }, { once: true });
+    }
   };
 
   const normalize = value => String(value || '').trim().toLowerCase();
@@ -456,21 +484,23 @@ document.querySelectorAll('a').forEach(a=>{
     const services = Array.isArray(data.services) ? data.services : [];
     document.querySelectorAll('[data-cms-service]').forEach(img => {
       const service = services.find(x => normalize(x.service) === normalize(img.dataset.cmsService));
-      const url = driveDirect(service);
-      if (url) img.src = url;
+      const url = driveDirect(service, 'drive_url', 'image');
+      if (url) { img.src = url; installMediaFallbacks(img); }
     });
 
     const media = Array.isArray(data.media) ? data.media : [];
     document.querySelectorAll('[data-cms-media-key]').forEach(el => {
       const item = media.find(x => normalize(x.key) === normalize(el.dataset.cmsMediaKey));
-      const url = driveDirect(item);
+      const url = driveDirect(item, 'drive_url', el.tagName === 'VIDEO' ? 'video' : 'image');
       if (!url) return;
       if (el.tagName === 'VIDEO') {
         el.src = url;
+        installMediaFallbacks(el);
         el.load();
         if (el.autoplay) el.play().catch(() => {});
       } else {
         el.src = url;
+        installMediaFallbacks(el);
       }
     });
 
@@ -495,10 +525,11 @@ document.querySelectorAll('a').forEach(a=>{
       const wrap = document.createElement('div');
       wrap.className = 'showcase-media-item';
       wrap.dataset.showcaseIndex = index;
-      const url = driveDirect(item);
+      const url = driveDirect(item, 'drive_url', normalize(item.media_type));
       if (normalize(item.media_type) === 'video') {
         const v = document.createElement('video');
         v.src = url;
+        installMediaFallbacks(v);
         v.muted = true;
         v.loop = true;
         v.playsInline = true;
@@ -508,6 +539,7 @@ document.querySelectorAll('a').forEach(a=>{
       } else {
         const img = document.createElement('img');
         img.src = url;
+        installMediaFallbacks(img);
         img.loading = index < 2 ? 'eager' : 'lazy';
         img.alt = item.caption || 'Underchargers workshop showcase';
         wrap.appendChild(img);
@@ -525,7 +557,7 @@ document.querySelectorAll('a').forEach(a=>{
       if (label.includes('las')) target = document.querySelector('[data-image="branch-las-pinas.jpg"]');
       else if (label.includes('quezon')) target = document.querySelector('[data-image="branch-qc.jpg"]');
       else if (label.includes('mandaluyong')) target = document.querySelector('[data-image="branch-mandaluyong.jpg"]');
-      const url = driveDirect(branch);
+      const url = driveDirect(branch, 'drive_url', 'image');
       if (target && url) {
         target.style.backgroundImage = `url("${url}")`;
         target.classList.add('has-drive-image');
