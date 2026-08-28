@@ -490,7 +490,9 @@ document.querySelectorAll('a').forEach(a=>{
 
     const media = Array.isArray(data.media) ? data.media : [];
     document.querySelectorAll('[data-cms-media-key]').forEach(el => {
-      const item = media.find(x => normalize(x.key) === normalize(el.dataset.cmsMediaKey));
+      const wantedKey = normalize(el.dataset.cmsMediaKey);
+      const wantedFile = normalize(el.dataset.cmsFilename);
+      const item = media.find(x => normalize(x.key) === wantedKey) || (wantedFile ? media.find(x => normalize(x.file_name) === wantedFile) : null);
       const url = driveDirect(item, 'drive_url', el.tagName === 'VIDEO' ? 'video' : 'image');
       if (!url) return;
       if (el.tagName === 'VIDEO') {
@@ -643,4 +645,30 @@ document.querySelectorAll('a').forEach(a=>{
   closeBtn?.addEventListener('click',close);
   modal.addEventListener('click',e=>{if(e.target===modal)close();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('is-open'))close();});
+})();
+
+
+/* V8.4 hero media hardening: exact synced filename + exact Drive ID fallback. */
+(() => {
+  const hero=document.querySelector('.home-hero .hero-video');
+  if(!hero) return;
+  const id='1ZXaIgjmaovs3SDMJewGOpYwCuIIr0UnB';
+  const sources=[
+    `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`,
+    `https://drive.google.com/uc?export=download&id=${id}`
+  ];
+  let fallbackIndex=0;
+  const tryPlay=()=>{hero.muted=true;hero.defaultMuted=true;const p=hero.play();if(p&&p.catch)p.catch(()=>{});};
+  const useNext=()=>{
+    if(fallbackIndex>=sources.length) return;
+    const next=sources[fallbackIndex++];
+    if(hero.src!==next){hero.src=next;hero.load();}
+    tryPlay();
+  };
+  hero.addEventListener('loadeddata',tryPlay);
+  hero.addEventListener('canplay',tryPlay);
+  hero.addEventListener('error',useNext);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)tryPlay();});
+  window.addEventListener('pageshow',tryPlay);
+  setTimeout(()=>{if(hero.readyState<2) useNext(); else tryPlay();},2200);
 })();

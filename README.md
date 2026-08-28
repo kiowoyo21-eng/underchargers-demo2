@@ -1,4 +1,5 @@
-Underchargers V8.3 consolidated patch
+# Underchargers V8.4 Final Review Patch
 
-Code-only static website. Media remains on Google Drive via the Apps Script CMS.
-Includes: logo/award fallback fixes, responsive Services cleanup, smaller Engine image on desktop, desktop Showcase cleanup, testimonial profile initials with auto-rotation only, Franchise + Booking desktop left-context/right-form layouts, clickable franchise inclusion modal, and contact CTA/icon cleanup.
+Code-only static website patch. Media remains served from Google Drive/CMS.
+
+Includes: alternating desktop services + stacked mobile services, non-sticky franchise/booking copy, side-by-side mobile franchise stats, full-card franchise inclusion controls, clearer booking opener, and hardened exact hero-video.mp4 loading.
