@@ -666,3 +666,56 @@ body{font-size:18px}
   .home-hero .hero-media{width:100vw!important}
   .home-hero .hero-media .hero-video{object-position:center center!important}
 }
+
+
+/* V8.8 consolidated final review patch */
+/* Tighten the gap between Services intro and the first service story. */
+.services-intro{padding-bottom:clamp(26px,3.2vw,48px)!important}
+.service-story-stack{padding-top:0!important}
+
+/* Engine copy matches the left-aligned Error Scan typography. */
+.service-engine{text-align:left!important}
+.service-engine .service-copy,.service-engine .centered-copy{max-width:none!important;margin-inline:0!important;text-align:left!important;align-items:flex-start!important}
+.service-engine .service-copy p:not(.eyebrow){margin-left:0!important;margin-right:0!important}
+.service-engine .service-copy .eyebrow,.service-engine .service-copy h3,.service-engine .service-copy p,.service-engine .service-cta{text-align:left!important}
+
+/* Franchise standard: editorial copy + large official facility image. */
+.franchise-standard{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(34px,5vw,78px);align-items:stretch;margin-bottom:clamp(38px,5vw,72px)}
+.franchise-standard-copy{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:clamp(10px,2vw,28px) 0}
+.franchise-standard-copy h3{font-size:clamp(40px,5vw,72px);line-height:.96;letter-spacing:-.055em;margin:0 0 22px}
+.franchise-standard-copy>p:not(.eyebrow){font-size:clamp(17px,1.5vw,20px);line-height:1.65;color:var(--muted);max-width:630px}
+.franchise-standard-media{min-height:520px;border-radius:28px;overflow:hidden;border:1px solid var(--line);background:#111}
+.franchise-standard-media img{display:block;width:100%;height:100%;min-height:520px;object-fit:cover}
+.franchise-standard .mini-stats{margin-top:auto;padding-top:30px}
+
+/* Contact hub: six balanced app-first channels. */
+.contact-list [data-channel="tiktok"] .channel-icon svg{fill:currentColor!important;stroke:none!important}
+.contact-list [data-channel="sms"] .channel-icon svg,.contact-list [data-channel="viber"] .channel-icon svg,.contact-list [data-channel="whatsapp"] .channel-icon svg,.contact-list [data-channel="messenger"] .channel-icon svg{fill:none!important;stroke:currentColor!important}
+
+/* Stronger closing CTA hierarchy. */
+.footer-statement>p{max-width:680px;margin:26px 0 0;color:var(--muted);font-size:clamp(18px,1.8vw,23px);line-height:1.55}
+
+/* Mobile nav swipe affordance: subtle fade that disappears after interaction. */
+@media(max-width:820px){
+  .header-inner{position:relative}
+  .header-inner::after{content:"";position:absolute;right:0;bottom:0;width:54px;height:52px;pointer-events:none;background:linear-gradient(90deg,rgba(8,8,8,0),rgba(8,8,8,.96) 82%);transition:opacity .25s ease}
+  .header-inner:has(.primary-nav.nav-hint-seen)::after{opacity:0}
+  .primary-nav{padding-right:46px}
+  .franchise-standard{grid-template-columns:1fr;gap:26px}
+  .franchise-standard-copy{order:1}
+  .franchise-standard-media{order:2;min-height:0;aspect-ratio:4/3;border-radius:22px}
+  .franchise-standard-media img{min-height:0;height:100%;aspect-ratio:4/3}
+  .franchise-standard .mini-stats{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important}
+  .services-intro{padding-bottom:28px!important}
+}
+
+/* Thank-you page uses the same system, but with its own editorial hero. */
+.thank-you-page main{min-height:calc(100svh - var(--header));display:grid;align-items:center}
+.thank-you-wrap{width:min(1120px,calc(100% - 48px));margin:auto;padding:clamp(70px,9vw,130px) 0}
+.thank-you-panel{border:1px solid var(--line);border-radius:32px;background:radial-gradient(circle at 85% 15%,rgba(214,168,62,.11),transparent 28%),#0d0d0d;padding:clamp(34px,6vw,78px)}
+.thank-you-panel h1{font-size:clamp(58px,9vw,120px);line-height:.86;letter-spacing:-.065em;margin:8px 0 24px}
+.thank-you-panel>.thank-you-copy{max-width:760px;color:var(--muted);font-size:clamp(17px,1.6vw,21px);line-height:1.65;margin:0 0 42px}
+.thank-you-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.thank-you-channels{margin-top:48px}
+.thank-you-channels .contact-list{margin-top:24px}
+@media(max-width:820px){.thank-you-wrap{width:calc(100% - 32px);padding:48px 0 80px}.thank-you-panel{padding:30px 20px;border-radius:24px}.thank-you-panel h1{font-size:clamp(52px,17vw,78px)}.thank-you-actions .btn{width:100%}}

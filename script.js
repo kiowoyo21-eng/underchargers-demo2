@@ -39,6 +39,13 @@ const navObserver = new IntersectionObserver(entries => {
   }
 }, { rootMargin: '-25% 0px -55% 0px', threshold: [0,.1,.3,.6] });
 sections.forEach(section => navObserver.observe(section));
+// Mobile navigation affordance: show a subtle right-edge hint until the user scrolls it.
+if(nav){
+  const clearNavHint=()=>nav.classList.add('nav-hint-seen');
+  nav.addEventListener('scroll',()=>{if(nav.scrollLeft>8)clearNavHint();},{passive:true});
+  nav.addEventListener('touchmove',clearNavHint,{passive:true,once:true});
+}
+
 
 // Local image placeholders automatically become images once matching files are dropped into assets/images/.
 function loadLocalImage(el, name, extraGradient='linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.16))') {
@@ -139,7 +146,7 @@ document.querySelectorAll('[data-map]').forEach(a=>a.addEventListener('click',e=
 
 // Franchise front-end demo submit.
 const franchise=document.getElementById('franchise-form');
-if(franchise) franchise.addEventListener('submit',e=>{e.preventDefault();if(!franchise.reportValidity())return;window.location.href=franchise.dataset.success||'thank-you.html';});
+if(franchise) franchise.addEventListener('submit',e=>{e.preventDefault();if(!franchise.reportValidity())return;window.location.href=franchise.dataset.success||'/thank-you';});
 
 // Booking flow: branch -> calendar -> customer details.
 const branchButtons=[...document.querySelectorAll('.branch-choice')];
@@ -187,14 +194,14 @@ function selectBranch(btn){
   calendarBranchNote.textContent=`Showing dates for ${selectedBranch}.`;
   bookingSummary.textContent='Choose your date to unlock customer and vehicle details.';
   viewYear=today.getFullYear(); viewMonth=today.getMonth(); renderCalendar();
-  calendarStep.scrollIntoView({behavior:'smooth',block:'center'});
+  window.scrollTo({top:Math.max(0,calendarStep.getBoundingClientRect().top+window.scrollY-(document.querySelector('.site-header')?.offsetHeight||0)-16),behavior:'smooth'});
 }
 function selectDate(date){
   selectedDate=ymd(date); bookingDateInput.value=selectedDate;
   detailsStep.setAttribute('aria-disabled','false'); bookingForm.classList.remove('is-locked');
   bookingSummary.textContent=`${selectedBranch} · ${formatDate(date)}`;
   renderCalendar();
-  setTimeout(()=>detailsStep.scrollIntoView({behavior:'smooth',block:'start'}),180);
+  setTimeout(()=>window.scrollTo({top:Math.max(0,detailsStep.getBoundingClientRect().top+window.scrollY-(document.querySelector('.site-header')?.offsetHeight||0)-16),behavior:'smooth'}),180);
 }
 branchButtons.forEach(btn=>btn.addEventListener('click',()=>selectBranch(btn)));
 document.getElementById('calendar-prev')?.addEventListener('click',()=>{const candidate=new Date(viewYear,viewMonth-1,1);const min=new Date(today.getFullYear(),today.getMonth(),1);if(candidate<min)return;viewYear=candidate.getFullYear();viewMonth=candidate.getMonth();renderCalendar();});
@@ -299,13 +306,13 @@ document.querySelectorAll('#services .media-placeholder, #services [data-image]'
   el.classList.add('has-real-image');
 });
 
-// Messenger destination: use the official Underchargers Facebook username as web fallback.
+// Route Message Us / Consult Our Expert through the Messenger app-first flow.
 document.querySelectorAll('a').forEach(a=>{
   const text=(a.textContent||'').trim().toLowerCase();
   if(text.includes('message us') || text.includes('consult our expert')){
-    a.href='https://www.facebook.com/underchargersofficial';
-    a.target='_blank';
-    a.rel='noopener';
+    a.dataset.channel='messenger';
+    a.href='#';
+    a.removeAttribute('target');
   }
 });
 
