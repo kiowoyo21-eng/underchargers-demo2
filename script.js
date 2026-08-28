@@ -127,7 +127,14 @@ function openChannel(type){const s=CONFIG.social;switch(type){
   case 'viber': return appFirst(`viber://chat?number=${encodeURIComponent(s.viberPhone)}`,'https://www.viber.com/');
   case 'whatsapp': return appFirst(`whatsapp://send?phone=${s.whatsappPhone}&text=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`,`https://wa.me/${s.whatsappPhone}?text=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`);
 }}
-document.querySelectorAll('[data-channel]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();openChannel(a.dataset.channel);}));
+const messengerModal=document.getElementById('messenger-modal');
+const openMessengerModal=()=>{messengerModal?.classList.add('is-open');messengerModal?.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';};
+const closeMessengerModal=()=>{messengerModal?.classList.remove('is-open');messengerModal?.setAttribute('aria-hidden','true');document.body.style.overflow='';};
+document.querySelectorAll('[data-channel]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();a.dataset.channel==='messenger'?openMessengerModal():openChannel(a.dataset.channel);}));
+messengerModal?.querySelector('.messenger-modal-close')?.addEventListener('click',closeMessengerModal);
+messengerModal?.querySelector('.messenger-modal-go')?.addEventListener('click',()=>{closeMessengerModal();openChannel('messenger');});
+messengerModal?.addEventListener('click',e=>{if(e.target===messengerModal)closeMessengerModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&messengerModal?.classList.contains('is-open'))closeMessengerModal();});
 document.querySelectorAll('[data-map]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();window.open(CONFIG.maps[a.dataset.map],'_blank','noopener');}));
 
 // Franchise front-end demo submit.
@@ -648,41 +655,7 @@ document.querySelectorAll('a').forEach(a=>{
 })();
 
 
-/* V8.5 hero media: direct video first, then Drive preview fallback.
-   Direct Drive downloads can be blocked by CORP in Chromium; the preview iframe
-   is an embed-safe fallback, while the poster prevents a black hero. */
-(() => {
-  const hero=document.querySelector('.home-hero .hero-video');
-  const media=document.querySelector('.home-hero .hero-media');
-  const preview=document.querySelector('.home-hero .hero-drive-preview');
-  if(!hero||!media||!preview) return;
-  const id='1ZXaIgjmaovs3SDMJewGOpYwCuIIr0UnB';
-  const direct=[
-    `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`,
-    `https://drive.google.com/uc?export=download&id=${id}`
-  ];
-  let i=0, settled=false;
-  const showPreview=()=>{
-    if(settled) return;
-    settled=true;
-    preview.src=`https://drive.google.com/file/d/${id}/preview?autoplay=1`;
-    media.classList.add('use-drive-preview');
-  };
-  const play=()=>{
-    hero.muted=true; hero.defaultMuted=true;
-    const p=hero.play(); if(p&&p.catch) p.catch(()=>{});
-  };
-  const next=()=>{
-    if(i>=direct.length){ showPreview(); return; }
-    hero.src=direct[i++]; hero.load(); play();
-  };
-  hero.addEventListener('loadeddata',()=>{ if(hero.videoWidth>0){settled=true;media.classList.remove('use-drive-preview');play();} },{passive:true});
-  hero.addEventListener('canplay',()=>{ if(hero.videoWidth>0){settled=true;media.classList.remove('use-drive-preview');play();} },{passive:true});
-  hero.addEventListener('error',()=>{ if(!settled) next(); });
-  next();
-  setTimeout(()=>{ if(!settled || hero.readyState<2) showPreview(); },1800);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!media.classList.contains('use-drive-preview'))play();});
-})();
+
 
 /* V8.5 image lightbox — service, award, showcase and branch photos. */
 (() => {
@@ -712,4 +685,15 @@ document.querySelectorAll('a').forEach(a=>{
   closeBtn.addEventListener('click',close);
   box.addEventListener('click',e=>{if(e.target===box)close();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('is-open'))close();});
+})();
+
+
+/* V8.7 startup, media and accessibility cleanup */
+(() => {
+  if ('scrollRestoration' in history) history.scrollRestoration='manual';
+  const hero=document.querySelector('.home-hero .hero-video');
+  if(hero){ hero.muted=true; hero.defaultMuted=true; hero.volume=0; hero.setAttribute('muted',''); const p=hero.play(); if(p?.catch)p.catch(()=>{}); }
+  document.querySelectorAll('img').forEach((img,i)=>{ if(!img.closest('.site-header')){ img.loading='lazy'; img.decoding='async'; } else { img.loading='eager'; img.fetchPriority='high'; } });
+  const resetHome=()=>{ if(location.hash) history.replaceState(null,'',location.pathname+location.search); window.scrollTo(0,0); };
+  window.addEventListener('load',()=>requestAnimationFrame(resetHome),{once:true});
 })();
