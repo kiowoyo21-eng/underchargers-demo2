@@ -690,7 +690,7 @@ body{font-size:18px}
 
 /* Contact hub: six balanced app-first channels. */
 .contact-list [data-channel="tiktok"] .channel-icon svg{fill:currentColor!important;stroke:none!important}
-.contact-list [data-channel="sms"] .channel-icon svg,.contact-list [data-channel="viber"] .channel-icon svg,.contact-list [data-channel="whatsapp"] .channel-icon svg,.contact-list [data-channel="messenger"] .channel-icon svg{fill:none!important;stroke:currentColor!important}
+.contact-list [data-channel="sms"] .channel-icon svg,.contact-list [data-channel="viber"] .channel-icon svg,.contact-list [data-channel="messenger"] .channel-icon svg{fill:none!important;stroke:currentColor!important}
 
 /* Stronger closing CTA hierarchy. */
 .footer-statement>p{max-width:680px;margin:26px 0 0;color:var(--muted);font-size:clamp(18px,1.8vw,23px);line-height:1.55}

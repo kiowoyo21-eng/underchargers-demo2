@@ -2,12 +2,9 @@ const CONFIG = {
   social: {
     // Replace these with the final official handles/numbers before production.
     instagramUsername: 'underchargers',
-    facebookUrl: 'https://www.facebook.com/underchargersofficial',
     messengerUsername: 'underchargersofficial',
-    tiktokUsername: 'underchargers',
-    phone: '+639179620045',
-    viberPhone: '+639179620045',
-    whatsappPhone: '639179620045'
+    phone: '+639174007131',
+    viberPhone: '+639173017487',
   },
   maps: {
     qc: 'https://www.google.com/maps/search/?api=1&query=116%20Diamond%20Ave%20Novaliches%20Quezon%20City',
@@ -127,8 +124,7 @@ function appFirst(appUrl,webUrl){
 }
 function openChannel(type){const s=CONFIG.social;switch(type){
   case 'instagram': return isIOS() ? (window.location.href=`https://www.instagram.com/${s.instagramUsername}/`) : appFirst(`instagram://user?username=${s.instagramUsername}`,`https://www.instagram.com/${s.instagramUsername}/`);
-  case 'facebook': return isIOS()||isAndroid()?appFirst(`fb://facewebmodal/f?href=${encodeURIComponent(s.facebookUrl)}`,s.facebookUrl):window.location.href=s.facebookUrl;
-  case 'messenger': {
+case 'messenger': {
     const messengerWeb=`https://m.me/${s.messengerUsername}`;
     // iPhone/iPad: use Meta's HTTPS universal link directly from the user tap.
     // Do not try fb-messenger:// first on iOS; Safari/Meta handles the Messenger handoff.
@@ -139,10 +135,8 @@ function openChannel(type){const s=CONFIG.social;switch(type){
     // Android: retain the native deep link that already opens the correct conversation.
     return appFirst(`fb-messenger://user-thread/${s.messengerUsername}`,messengerWeb);
   }
-  case 'tiktok': return appFirst(`snssdk1233://user/profile/${s.tiktokUsername}`,`https://www.tiktok.com/@${s.tiktokUsername}`);
-  case 'sms': return window.location.href=`sms:${s.phone}${isIOS()?'&':'?'}body=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`;
+case 'sms': return window.location.href=`sms:${s.phone}${isIOS()?'&':'?'}body=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`;
   case 'viber': return appFirst(`viber://chat?number=${encodeURIComponent(s.viberPhone)}`,'https://www.viber.com/');
-  case 'whatsapp': return appFirst(`whatsapp://send?phone=${s.whatsappPhone}&text=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`,`https://wa.me/${s.whatsappPhone}?text=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`);
 }}
 const messengerModal=document.getElementById('messenger-modal');
 const openMessengerModal=()=>{messengerModal?.classList.add('is-open');messengerModal?.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';};
