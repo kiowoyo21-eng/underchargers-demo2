@@ -134,7 +134,7 @@ function openChannel(type){const s=CONFIG.social;switch(type){
     const androidMessenger=`fb-messenger://user-thread/${s.messengerUsername}`;
     return appFirst(isIOS() ? iosMessenger : androidMessenger, messengerWeb);
   }
-  case 'tiktok': return appFirst(`snssdk1233://user/profile/${s.tiktokUsername}`,`https://www.tiktok.com/@${s.tiktokUsername}`);
+  case 'tiktok': window.location.href=`https://www.tiktok.com/@${s.tiktokUsername}`; return;
   case 'sms': return window.location.href=`sms:${s.phone}${isIOS()?'&':'?'}body=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`;
   case 'viber': return appFirst(`viber://chat?number=${encodeURIComponent(s.viberPhone)}`,'https://www.viber.com/');
   case 'whatsapp': return appFirst(`whatsapp://send?phone=${s.whatsappPhone}&text=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`,`https://wa.me/${s.whatsappPhone}?text=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`);
