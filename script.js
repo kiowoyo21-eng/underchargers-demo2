@@ -126,9 +126,9 @@ function appFirst(appUrl,webUrl){
   setTimeout(()=>{if(!document.hidden && Date.now()-started<2300) window.location.href=webUrl;},950);
 }
 function openChannel(type){const s=CONFIG.social;switch(type){
-  case 'instagram': return appFirst(`instagram://user?username=${s.instagramUsername}`,`https://www.instagram.com/${s.instagramUsername}/`);
+  case 'instagram': return isIOS() ? (window.location.href=`https://www.instagram.com/${s.instagramUsername}/`) : appFirst(`instagram://user?username=${s.instagramUsername}`,`https://www.instagram.com/${s.instagramUsername}/`);
   case 'facebook': return isIOS()||isAndroid()?appFirst(`fb://facewebmodal/f?href=${encodeURIComponent(s.facebookUrl)}`,s.facebookUrl):window.location.href=s.facebookUrl;
-  case 'messenger': return appFirst(`fb-messenger://user-thread/${s.messengerUsername}`,`https://m.me/${s.messengerUsername}`);
+  case 'messenger': { const m=`https://m.me/${s.messengerUsername}`; return isIOS() ? (window.location.href=m) : appFirst(`fb-messenger://user-thread/${s.messengerUsername}`,m); }
   case 'tiktok': return appFirst(`snssdk1233://user/profile/${s.tiktokUsername}`,`https://www.tiktok.com/@${s.tiktokUsername}`);
   case 'sms': return window.location.href=`sms:${s.phone}${isIOS()?'&':'?'}body=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`;
   case 'viber': return appFirst(`viber://chat?number=${encodeURIComponent(s.viberPhone)}`,'https://www.viber.com/');
