@@ -1,7 +1,6 @@
-visible_channels_sitewide: ['instagram', 'messenger', 'sms', 'viber']
-visible_forbidden_terms: {'Facebook': False, 'TikTok': False, 'WhatsApp': False}
-preferred_contact_options_only: []
 script_syntax_ok: True
-sms_number_present: True
-viber_number_present: True
-ios_messenger_thread_present: True
+hardcoded_be_one_assets_removed: True
+be_one_cms_renderer_present: True
+be_one_rebuild_event_present: True
+bundled_be_one_folder_removed: True
+service_ctas_still_messenger: True

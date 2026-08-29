@@ -65,21 +65,6 @@ document.querySelectorAll('[data-engine]').forEach(btn => btn.addEventListener('
   loadLocalImage(enginePhoto, btn.dataset.engine, 'linear-gradient(180deg,rgba(0,0,0,.01),rgba(0,0,0,.05))');
 }));
 
-// Portrait showcase.
-const showcase = ['showcase-1.jpg','showcase-2.jpg','showcase-3.jpg','showcase-4.jpg','showcase-5.jpg'];
-let showIndex = 0;
-function setMediaImage(el,name){ if(!el)return; el.dataset.image=name; el.style.background=''; loadLocalImage(el,name,'linear-gradient(180deg,rgba(0,0,0,.01),rgba(0,0,0,.08))'); }
-function renderShowcase(){
-  const main=document.querySelector('.portrait-main .portrait-media'),prev=document.querySelector('.portrait-side.prev .portrait-media'),next=document.querySelector('.portrait-side.next .portrait-media');
-  setMediaImage(main,showcase[showIndex]); setMediaImage(prev,showcase[(showIndex-1+showcase.length)%showcase.length]); setMediaImage(next,showcase[(showIndex+1)%showcase.length]);
-  const c=document.getElementById('showcase-count'); if(c)c.textContent=String(showIndex+1).padStart(2,'0')+' / '+String(showcase.length).padStart(2,'0');
-}
-function moveShowcase(step){showIndex=(showIndex+step+showcase.length)%showcase.length;renderShowcase();}
-document.querySelectorAll('[data-prev],.portrait-side.prev').forEach(b=>b.addEventListener('click',()=>moveShowcase(-1)));
-document.querySelectorAll('[data-next],.portrait-side.next').forEach(b=>b.addEventListener('click',()=>moveShowcase(1)));
-let touchX=null; const stage=document.querySelector('[data-carousel]');
-if(stage){ stage.addEventListener('touchstart',e=>touchX=e.touches[0].clientX,{passive:true}); stage.addEventListener('touchend',e=>{if(touchX===null)return;const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>45)moveShowcase(dx<0?1:-1);touchX=null},{passive:true}); }
-
 // Nine testimonial slots, three visible per cycle. The first three are existing reviews; the remaining six are intentionally marked placeholders so no customer quote is fabricated.
 const reviews = [
   {name:'Jhun Porbus',branch:'Underchargers client',text:'Staff are very welcoming and friendly. Associates explain every process and the mechanics are well experienced. We will surely come again.'},
@@ -268,18 +253,6 @@ if(bookingForm) bookingForm.addEventListener('submit',e=>{
     }));
   }
 
-  // Generic autoplay for portrait showcase/carousels without changing their layout.
-  const portrait = document.querySelector('.portrait-showcase, .showcase-carousel, [data-showcase]');
-  if (portrait) {
-    const next = portrait.querySelector('[data-next], .next, .carousel-next, button[aria-label*="Next"]');
-    let timer;
-    const start=()=>{ clearInterval(timer); if(next) timer=setInterval(()=>next.click(),4500); };
-    ['pointerdown','touchstart'].forEach(ev=>portrait.addEventListener(ev,()=>clearInterval(timer),{passive:true}));
-    ['pointerup','touchend'].forEach(ev=>portrait.addEventListener(ev,start,{passive:true}));
-    portrait.addEventListener('mouseenter',()=>clearInterval(timer));
-    portrait.addEventListener('mouseleave',start);
-    start();
-  }
 
   // Ensure testimonials continue to rotate automatically, preserving their existing 3-at-a-time layout.
   const testimonials = document.querySelector('.testimonials, #testimonials, [data-testimonials]');
@@ -319,120 +292,6 @@ document.querySelectorAll('a').forEach(a=>{
     a.removeAttribute('target');
   }
 });
-
-
-/* V5 showcase auto-repeat behavior */
-(() => {
-  const stage = document.querySelector('.portrait-stage[data-carousel], [data-showcase], .portrait-showcase');
-  if (!stage) return;
-
-  const items = Array.from(stage.querySelectorAll('img'));
-  if (items.length < 2) return;
-
-  let index = 0;
-  let timer = null;
-  let paused = false;
-
-  const render = () => {
-    items.forEach((img, i) => {
-      const delta = (i - index + items.length) % items.length;
-      img.dataset.showcaseState = delta === 0 ? 'active' : delta === 1 ? 'next' : delta === items.length - 1 ? 'prev' : 'hidden';
-    });
-  };
-
-  const next = () => { index = (index + 1) % items.length; render(); };
-  const prev = () => { index = (index - 1 + items.length) % items.length; render(); };
-
-  const start = () => {
-    clearInterval(timer);
-    if (!paused) timer = setInterval(next, 4500);
-  };
-  const manual = fn => { fn(); start(); };
-
-  document.querySelectorAll('[data-carousel-next], .showcase-next').forEach(btn => btn.addEventListener('click', () => manual(next)));
-  document.querySelectorAll('[data-carousel-prev], .showcase-prev').forEach(btn => btn.addEventListener('click', () => manual(prev)));
-
-  stage.addEventListener('mouseenter', () => { paused = true; clearInterval(timer); });
-  stage.addEventListener('mouseleave', () => { paused = false; start(); });
-  stage.addEventListener('touchstart', () => { paused = true; clearInterval(timer); }, {passive:true});
-  stage.addEventListener('touchend', () => { paused = false; start(); }, {passive:true});
-
-  render();
-  start();
-})();
-
-
-/* V7 showcase carousel */
-(() => {
-  const stage = document.querySelector('.portrait-stage[data-carousel], [data-showcase], .portrait-showcase');
-  if (!stage) return;
-
-  const items = [...stage.querySelectorAll('.showcase-media-item')];
-  if (!items.length) return;
-
-  let index = 0;
-  let timer = null;
-  let touchStartX = 0;
-
-  const activate = (nextIndex) => {
-    index = (nextIndex + items.length) % items.length;
-
-    items.forEach((item, i) => {
-      const active = i === index;
-      item.classList.toggle('is-active', active);
-      item.setAttribute('aria-current', active ? 'true' : 'false');
-
-      const video = item.querySelector('video');
-      if (video) {
-        if (active) {
-          video.muted = true;
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
-        } else {
-          video.pause();
-          video.currentTime = 0;
-        }
-      }
-    });
-
-    const activeItem = items[index];
-    const targetLeft = activeItem.offsetLeft - (stage.clientWidth - activeItem.clientWidth) / 2;
-    stage.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
-  };
-
-  const start = () => {
-    stop();
-    timer = setInterval(() => activate(index + 1), 4500);
-  };
-  const stop = () => {
-    if (timer) clearInterval(timer);
-    timer = null;
-  };
-  const reset = () => { activate(index); start(); };
-
-  stage.addEventListener('mouseenter', stop);
-  stage.addEventListener('mouseleave', start);
-  stage.addEventListener('touchstart', (e) => {
-    stop();
-    touchStartX = e.touches[0]?.clientX ?? 0;
-  }, { passive: true });
-  stage.addEventListener('touchend', (e) => {
-    const endX = e.changedTouches[0]?.clientX ?? touchStartX;
-    const dx = endX - touchStartX;
-    if (Math.abs(dx) > 45) activate(index + (dx < 0 ? 1 : -1));
-    start();
-  }, { passive: true });
-
-  document.querySelectorAll('[data-carousel-prev],[data-showcase-prev],.showcase-prev').forEach(btn => {
-    btn.addEventListener('click', () => { activate(index - 1); start(); });
-  });
-  document.querySelectorAll('[data-carousel-next],[data-showcase-next],.showcase-next').forEach(btn => {
-    btn.addEventListener('click', () => { activate(index + 1); start(); });
-  });
-
-  activate(0);
-  start();
-})();
 
 
 /* =========================================================
@@ -525,6 +384,7 @@ document.querySelectorAll('a').forEach(a=>{
     });
 
     renderShowcase(data, media);
+    renderBeOne(media);
     renderBranches(data.branches || []);
     renderTestimonialsFromCMS(data.testimonials || []);
   }
@@ -569,6 +429,50 @@ document.querySelectorAll('a').forEach(a=>{
     window.dispatchEvent(new CustomEvent('uc:showcase-rebuilt'));
   }
 
+
+  function renderBeOne(media) {
+    const stack = document.getElementById('be-one-stack');
+    if (!stack) return;
+
+    const items = media
+      .filter(item => /^be_one_\d+$/i.test(String(item.key || '').trim()))
+      .sort((a, b) => {
+        const ai = Number(String(a.key || '').match(/(\d+)$/)?.[1] || 0);
+        const bi = Number(String(b.key || '').match(/(\d+)$/)?.[1] || 0);
+        return ai - bi;
+      });
+
+    stack.innerHTML = '';
+
+    if (!items.length) {
+      const empty = document.createElement('p');
+      empty.className = 'be-one-loading';
+      empty.textContent = 'Customer photos are being updated.';
+      stack.appendChild(empty);
+      return;
+    }
+
+    items.forEach((item, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'be-one-card';
+      btn.type = 'button';
+      btn.dataset.beOneIndex = String(index);
+      btn.setAttribute('aria-label', `View Underchargers customer photo ${index + 1}`);
+
+      const img = document.createElement('img');
+      img.src = driveDirect(item, 'drive_url', 'image');
+      img.alt = item.caption || item.file_name || 'Underchargers customer and serviced vehicle';
+      img.loading = index === 0 ? 'eager' : 'lazy';
+      img.decoding = 'async';
+      installMediaFallbacks(img);
+
+      btn.appendChild(img);
+      stack.appendChild(btn);
+    });
+
+    window.dispatchEvent(new CustomEvent('uc:be-one-rebuilt'));
+  }
+
   function renderBranches(branches) {
     if (!Array.isArray(branches) || !branches.length) return;
     branches.forEach(branch => {
@@ -605,36 +509,106 @@ document.querySelectorAll('a').forEach(a=>{
   document.addEventListener('DOMContentLoaded', loadCMS, { once: true });
 })();
 
-/* Re-initialize V8 Showcase cleanly after CMS rebuild. */
+/* Showcase: one clean, seamless infinite carousel. */
 (() => {
-  let timer;
+  let cleanup = null;
+
   const setup = () => {
+    if (cleanup) cleanup();
     const stage = document.getElementById('showcase-stage');
     if (!stage) return;
-    const items = [...stage.querySelectorAll('.showcase-media-item')];
-    if (!items.length) return;
-    clearInterval(timer);
-    let index = 0;
-    const activate = i => {
-      index = (i + items.length) % items.length;
-      items.forEach((item, idx) => {
-        const active = idx === index;
-        item.classList.toggle('is-active', active);
-        item.setAttribute('aria-current', active ? 'true' : 'false');
+
+    const originals = [...stage.querySelectorAll('.showcase-media-item:not([data-clone])')];
+    if (!originals.length) return;
+
+    stage.querySelectorAll('[data-clone]').forEach(el => el.remove());
+
+    // Clone enough items on both sides so the viewport is always filled.
+    const cloneCount = Math.min(Math.max(3, Math.ceil(stage.clientWidth / Math.max(originals[0].offsetWidth || 320, 1)) + 2), originals.length);
+    const before = originals.slice(-cloneCount).map(el => {
+      const c = el.cloneNode(true); c.dataset.clone = 'before'; c.setAttribute('aria-hidden','true'); return c;
+    });
+    const after = originals.slice(0, cloneCount).map(el => {
+      const c = el.cloneNode(true); c.dataset.clone = 'after'; c.setAttribute('aria-hidden','true'); return c;
+    });
+    before.reverse().forEach(c => stage.prepend(c));
+    after.forEach(c => stage.append(c));
+
+    const all = [...stage.querySelectorAll('.showcase-media-item')];
+    let logical = 0;
+    let timer = null;
+    let touchX = 0;
+    let busy = false;
+
+    const originalAt = i => originals[(i + originals.length) % originals.length];
+    const centerLeft = el => el.offsetLeft - (stage.clientWidth - el.clientWidth) / 2;
+
+    const setActive = () => {
+      const active = originalAt(logical);
+      all.forEach(item => {
+        const same = item === active;
+        item.classList.toggle('is-active', same);
         const v = item.querySelector('video');
-        if (v) active ? v.play().catch(() => {}) : v.pause();
+        if (v) same ? v.play().catch(()=>{}) : v.pause();
       });
-      const item = items[index];
-      stage.scrollTo({ left: item.offsetLeft - (stage.clientWidth - item.clientWidth) / 2, behavior: 'smooth' });
     };
-    activate(0);
-    timer = setInterval(() => activate(index + 1), 4500);
-    let sx = 0;
-    stage.ontouchstart = e => { sx = e.touches[0].clientX; clearInterval(timer); };
-    stage.ontouchend = e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 45) activate(index + (dx < 0 ? 1 : -1)); timer = setInterval(() => activate(index + 1), 4500); };
+
+    const jumpToOriginal = () => {
+      const target = originalAt(logical);
+      stage.scrollTo({left:centerLeft(target), behavior:'auto'});
+      setActive();
+    };
+
+    const move = step => {
+      if (busy || originals.length < 2) return;
+      busy = true;
+      const nextLogical = (logical + step + originals.length) % originals.length;
+      let target;
+
+      if (step > 0 && logical === originals.length - 1) {
+        target = stage.querySelector('[data-clone="after"]');
+      } else if (step < 0 && logical === 0) {
+        const befores = [...stage.querySelectorAll('[data-clone="before"]')];
+        target = befores[befores.length - 1];
+      } else {
+        target = originalAt(nextLogical);
+      }
+
+      stage.scrollTo({left:centerLeft(target), behavior:'smooth'});
+      logical = nextLogical;
+      window.setTimeout(() => {
+        jumpToOriginal();
+        busy = false;
+      }, 520);
+    };
+
+    const stop = () => { if (timer) clearInterval(timer); timer = null; };
+    const start = () => { stop(); if (originals.length > 1) timer = setInterval(() => move(1), 4500); };
+
+    stage.addEventListener('mouseenter', stop);
+    stage.addEventListener('mouseleave', start);
+    stage.addEventListener('touchstart', e => { stop(); touchX = e.touches[0]?.clientX || 0; }, {passive:true});
+    stage.addEventListener('touchend', e => {
+      const dx = (e.changedTouches[0]?.clientX || touchX) - touchX;
+      if (Math.abs(dx) > 40) move(dx < 0 ? 1 : -1);
+      start();
+    }, {passive:true});
+
+    requestAnimationFrame(jumpToOriginal);
+    start();
+
+    cleanup = () => {
+      stop();
+      stage.onmouseenter = stage.onmouseleave = stage.ontouchstart = stage.ontouchend = null;
+    };
   };
-  document.addEventListener('DOMContentLoaded', setup);
-  window.addEventListener('uc:showcase-rebuilt', setup);
+
+  document.addEventListener('DOMContentLoaded', setup, {once:true});
+  window.addEventListener('uc:showcase-rebuilt', () => requestAnimationFrame(setup));
+  window.addEventListener('resize', () => {
+    clearTimeout(window.__ucShowcaseResize);
+    window.__ucShowcaseResize = setTimeout(setup, 180);
+  });
 })();
 
 
@@ -707,4 +681,112 @@ document.querySelectorAll('a').forEach(a=>{
   document.querySelectorAll('img').forEach((img,i)=>{ if(!img.closest('.site-header')){ img.loading='lazy'; img.decoding='async'; } else { img.loading='eager'; img.fetchPriority='high'; } });
   const resetHome=()=>{ if(location.hash) history.replaceState(null,'',location.pathname+location.search); window.scrollTo(0,0); };
   window.addEventListener('load',()=>requestAnimationFrame(resetHome),{once:true});
+})();
+
+
+/* Be One of Them: CMS-driven stacked gallery + viewer. */
+(() => {
+  const viewer = document.getElementById('be-one-viewer');
+  const stack = document.getElementById('be-one-stack');
+  if (!viewer || !stack) return;
+
+  const image = viewer.querySelector('#be-one-viewer-image');
+  const closeBtn = viewer.querySelector('.be-one-viewer-close');
+  const prevBtn = viewer.querySelector('.be-one-viewer-nav.prev');
+  const nextBtn = viewer.querySelector('.be-one-viewer-nav.next');
+
+  let cards = [];
+  let active = 0;
+  let timer = null;
+  let touchX = 0;
+
+  const stop = () => {
+    if (timer) clearInterval(timer);
+    timer = null;
+  };
+
+  const render = () => {
+    if (!cards.length) return;
+    cards.forEach((card, i) => {
+      const delta = (i - active + cards.length) % cards.length;
+      card.dataset.stack = delta === 0 ? 'front' : delta <= 4 ? String(delta) : 'hidden';
+      card.style.zIndex = String(cards.length - delta);
+      card.setAttribute('aria-current', delta === 0 ? 'true' : 'false');
+    });
+  };
+
+  const move = step => {
+    if (!cards.length) return;
+    active = (active + step + cards.length) % cards.length;
+    render();
+  };
+
+  const start = () => {
+    stop();
+    if (cards.length > 1) timer = setInterval(() => move(1), 3800);
+  };
+
+  const open = index => {
+    if (!cards.length) return;
+    active = index;
+    render();
+    image.src = cards[active].querySelector('img')?.src || '';
+    viewer.classList.add('is-open');
+    viewer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    stop();
+    closeBtn?.focus();
+  };
+
+  const close = () => {
+    viewer.classList.remove('is-open');
+    viewer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    start();
+  };
+
+  const viewMove = step => {
+    move(step);
+    image.src = cards[active]?.querySelector('img')?.src || '';
+  };
+
+  const bindCards = () => {
+    stop();
+    cards = [...stack.querySelectorAll('.be-one-card')];
+    active = 0;
+
+    cards.forEach((card, i) => {
+      card.onclick = () => open(i);
+    });
+
+    render();
+    start();
+  };
+
+  closeBtn?.addEventListener('click', close);
+  prevBtn?.addEventListener('click', () => viewMove(-1));
+  nextBtn?.addEventListener('click', () => viewMove(1));
+
+  viewer.addEventListener('click', e => {
+    if (e.target === viewer) close();
+  });
+
+  viewer.addEventListener('touchstart', e => {
+    touchX = e.touches[0]?.clientX || 0;
+  }, { passive: true });
+
+  viewer.addEventListener('touchend', e => {
+    const dx = (e.changedTouches[0]?.clientX || touchX) - touchX;
+    if (Math.abs(dx) > 45) viewMove(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  document.addEventListener('keydown', e => {
+    if (!viewer.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') viewMove(-1);
+    if (e.key === 'ArrowRight') viewMove(1);
+  });
+
+  window.addEventListener('uc:be-one-rebuilt', bindCards);
+  bindCards();
 })();
