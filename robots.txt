@@ -1,5 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /thank-you
-
-Sitemap: https://underchargers.com/sitemap.xml
+Disallow: /
