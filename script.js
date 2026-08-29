@@ -434,7 +434,7 @@ document.querySelectorAll('a').forEach(a=>{
     const stack = document.getElementById('be-one-stack');
     if (!stack) return;
 
-    const items = media
+    let items = media
       .filter(item => /^be_one_\d+$/i.test(String(item.key || '').trim()))
       .sort((a, b) => {
         const ai = Number(String(a.key || '').match(/(\d+)$/)?.[1] || 0);
@@ -442,15 +442,27 @@ document.querySelectorAll('a').forEach(a=>{
         return ai - bi;
       });
 
-    stack.innerHTML = '';
-
+    // The current CMS deployment may not yet expose newly-added Media rows.
+    // Keep CMS as the primary source, but use the verified Drive files as a
+    // resilient fallback so the live section never renders empty.
     if (!items.length) {
-      const empty = document.createElement('p');
-      empty.className = 'be-one-loading';
-      empty.textContent = 'Customer photos are being updated.';
-      stack.appendChild(empty);
-      return;
+      items = [
+        ['be_one_1','be one 1.jpeg','1GdAtCXCGewX5RjfQhCLHOeMYsBN_ReYM'],
+        ['be_one_2','be one 2.jpeg','10iRxVf_UQTyBhlcRSb4ytb1eWho5TWeF'],
+        ['be_one_3','be one 3.jpeg','1uyMFIzRrGTHj3zKloDNwzCe0hD5wXDB5'],
+        ['be_one_4','be one 4.jpeg','1dJJoTya4SvBRrJ6ouosPdS2nIZYvQ_ns'],
+        ['be_one_5','be one 5.jpeg','1k56LASrMmR4WVsJZNpweMkK0E9PPYI8a'],
+        ['be_one_6','be one 6.jpeg','1Un4eTZ6OXgRN0EBQQzy-ElqNSSiwPBlt'],
+        ['be_one_7','be one 7.jpeg','1-sZU063lG3itLHjWtoVqG_85wPy5qAAK']
+      ].map(([key,file_name,id]) => ({
+        key,
+        file_name,
+        media_type: 'image',
+        drive_url: `https://drive.google.com/file/d/${id}/view`
+      }));
     }
+
+    stack.innerHTML = '';
 
     items.forEach((item, index) => {
       const btn = document.createElement('button');
@@ -468,7 +480,20 @@ document.querySelectorAll('a').forEach(a=>{
       img.alt = item.caption || item.file_name || 'Underchargers customer and serviced vehicle';
       img.loading = index === 0 ? 'eager' : 'lazy';
       img.decoding = 'async';
-      installMediaFallbacks(img);
+
+      // Dedicated Be One fallback chain:
+      // Drive thumbnail -> lh3 public image endpoint -> visible placeholder only if both fail.
+      const beOneId = extractDriveId(item.drive_url);
+      let beOneFallbackStage = 0;
+      img.addEventListener('error', () => {
+        if (!beOneId) return;
+        if (beOneFallbackStage === 0) {
+          beOneFallbackStage = 1;
+          img.src = `https://lh3.googleusercontent.com/d/${encodeURIComponent(beOneId)}=w2400`;
+        } else {
+          btn.classList.add('media-unavailable');
+        }
+      });
 
       btn.appendChild(img);
       stack.appendChild(btn);

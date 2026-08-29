@@ -943,3 +943,9 @@ body{font-size:18px}
     font-size:clamp(50px,15vw,72px)!important;
   }
 }
+
+
+/* V8.9.6 — Be One resilient media loading */
+.be-one-card.media-unavailable{
+  display:none!important;
+}
