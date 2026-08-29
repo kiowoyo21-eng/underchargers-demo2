@@ -1,0 +1,244 @@
+# Underchargers v8.12 production migration rules
+# Rename to .htaccess ONLY at HostGator production cutover after backup.
+Options -Indexes
+ErrorDocument 404 /404.html
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# Legitimate legacy URLs: preserve ranking signals with one-hop permanent redirects
+RedirectMatch 301 ^/home\-2/?$ https://underchargers.com/
+RedirectMatch 301 ^/about\-3/?$ https://underchargers.com/about/
+RedirectMatch 301 ^/services\-2/?$ https://underchargers.com/services/
+RedirectMatch 301 ^/contact\-2/?$ https://underchargers.com/contact/
+RedirectMatch 301 ^/book\-a\-visit\-now/?$ https://underchargers.com/book/
+RedirectMatch 301 ^/our\-staff/?$ https://underchargers.com/about/
+RedirectMatch 301 ^/thanks/?$ https://underchargers.com/thank-you
+RedirectMatch 301 ^/welcome/?$ https://underchargers.com/contact/
+
+# Compromised/demo URLs: do NOT redirect to the homepage. Return Gone (410).
+RedirectMatch 410 ^/blog/?$
+RedirectMatch 410 ^/category/general/?$
+RedirectMatch 410 ^/hello\-world/?$
+RedirectMatch 410 ^/post\-3/?$
+RedirectMatch 410 ^/post\-2/?$
+RedirectMatch 410 ^/post\-1/?$
+RedirectMatch 410 ^/hello\-world\-2/?$
+RedirectMatch 410 ^/0x74d4662c/?$
+RedirectMatch 410 ^/coreldraw\-2025\-portable\-exe\-patch\-windows\-10\-2025/?$
+RedirectMatch 410 ^/lumion\-12\-crack\-serial\-key\-no\-virus\-x64\-windows\-11\-tested/?$
+RedirectMatch 410 ^/adobe\-acrobat\-crack\-activator\-clean\-x86x64\-patch\-mega/?$
+RedirectMatch 410 ^/anydesk\-full\-activated\-final\-clean/?$
+RedirectMatch 410 ^/ace\-utilities\-crack\-exe\-final\-lifetime\-ultimate/?$
+RedirectMatch 410 ^/adobe\-premiere\-pro\-licenseactivated\-all\-versions\-lifetime\-verified/?$
+RedirectMatch 410 ^/adobe\-illustrator\-portable\-100\-worked\-x64\-100\-worked/?$
+RedirectMatch 410 ^/xmanager\-portable\-activator\-clean\-x32\-x64\-full\-ultimate/?$
+RedirectMatch 410 ^/beyond\-compare\-pro\-edition\-portable\-only\-final\-x86x64\-no\-virus\-mediafire/?$
+RedirectMatch 410 ^/adobe\-creative\-cloud\-2024\-crack\-for\-pc\-100\-worked\-x86x64\-windows\-10\-multilingual/?$
+RedirectMatch 410 ^/easeus\-data\-recovery\-full\-activated\-final\-clean/?$
+RedirectMatch 410 ^/ableton\-live\-looper\-crack\-tool\-universal\-x86x64\-no\-virus/?$
+RedirectMatch 410 ^/virtualdj\-pro\-portable\-serial\-key\-stable\-100\-worked\-reddit/?$
+RedirectMatch 410 ^/xoftspy\-antivirus\-crack\-tool\-clean\-windows\-11\-gdrive/?$
+RedirectMatch 410 ^/teamviewer\-2025\-portable\-product\-key\-final\-x64\-clean\-github/?$
+RedirectMatch 410 ^/office\-365\-plus\-cracked\-patch\-x86\-x64\-windows\-11/?$
+RedirectMatch 410 ^/office\-365\-crack\-for\-pc\-universal\-x86x64\-windows\-2025/?$
+RedirectMatch 410 ^/filmora\-14\-portable\-keygen\-windows\-clean/?$
+RedirectMatch 410 ^/fl\-studio\-portable\-exe\-latest\-x64\-final\-2025/?$
+RedirectMatch 410 ^/winrar\-crack\-serial\-key\-stable\-latest/?$
+RedirectMatch 410 ^/winrar\-7\-00\-crack\-only\-no\-virus\-100\-worked\-2025/?$
+RedirectMatch 410 ^/panda\-dome\-advanced\-portable\-activator\-patch\-latest\-reddit/?$
+RedirectMatch 410 ^/microsoft\-project\-professional\-crack\-product\-key\-100\-worked\-windows\-11\-verified/?$
+RedirectMatch 410 ^/vmware\-workstation\-crack\-for\-pc\-full\-latest\-tested/?$
+RedirectMatch 410 ^/dvd\-cloner\-crack\-keygen\-latest\-patch\-zip/?$
+RedirectMatch 410 ^/uninstall\-tool\-portable\-activator\-lifetime\-x64\-final\-bypass/?$
+RedirectMatch 410 ^/dvd\-cloner\-crack\-activator\-no\-virus\-x32x64\-no\-virus\-premium/?$
+RedirectMatch 410 ^/abbyy\-finereader\-corporate\-individuals\-standard\-portable\-only\-clean\-windows\-10\-premium/?$
+RedirectMatch 410 ^/internet\-download\-manager\-idm\-6\-40\-portable\-crack\-windows\-11\-x86x64\-no\-virus/?$
+RedirectMatch 410 ^/torrent\-ratio\-keeper\-monster\-crack\-exe\-lifetime\-x86\-x64\-final\-github/?$
+RedirectMatch 410 ^/internet\-download\-manager\-idm\-crack\-for\-pc\-stable\-x64\-windows\-10\-mega/?$
+RedirectMatch 410 ^/kerio\-control\-crack\-for\-pc\-universal\-100\-worked\-premium/?$
+RedirectMatch 410 ^/win2pdf\-pro\-crack\-only\-final\-lifetime\-2025/?$
+RedirectMatch 410 ^/typing\-quick\-easy\-portable\-license\-key\-all\-versions\-x86x64\-latest/?$
+RedirectMatch 410 ^/flashfxp\-crack\-tool\-latest\-x64\-patch/?$
+RedirectMatch 410 ^/office\-365\-portable\-crack\-latest\-stable\-bypass/?$
+RedirectMatch 410 ^/adobe\-illustrator\-2025\-crack\-for\-pc\-windows\-10\-x86\-x64\-100\-worked\-filecr/?$
+RedirectMatch 410 ^/filmora\-portable\-license\-key\-windows\-lifetime\-premium/?$
+RedirectMatch 410 ^/vmware\-workstation\-crack\-exe\-latest\-x86\-x64\-latest\-instant/?$
+RedirectMatch 410 ^/corel\-wordperfect\-office\-crack\-tool\-latest\-x32x64\-clean/?$
+RedirectMatch 410 ^/zemana\-antilogger\-portable\-tool\-lifetime\-x86x64\-no\-virus\-filecr/?$
+RedirectMatch 410 ^/adobe\-acrobat\-pro\-dc\-2020\-full\-activated\-latest\-final\-bypass/?$
+RedirectMatch 410 ^/google\-maps\-downloader\-portable\-keygen\-lifetime\-x32\-x64\-windows\-10/?$
+RedirectMatch 410 ^/easeus\-data\-recovery\-freeactivated\-full\-x86x64\-windows/?$
+RedirectMatch 410 ^/fl\-studio\-2025\-crack\-activator\-no\-virus\-latest\-genuine/?$
+RedirectMatch 410 ^/pdf4free\-crack\-only\-clean\-x32\-x64\-lifetime\-reddit/?$
+RedirectMatch 410 ^/adobe\-premiere\-pro\-2025\-crack\-exe\-stable\-clean\-mediafire/?$
+RedirectMatch 410 ^/adobe\-after\-effects\-portable\-serial\-key\-clean\-x86x64\-patch\-mega/?$
+RedirectMatch 410 ^/vegas\-pro\-crack\-serial\-key\-patch\-no\-virus/?$
+RedirectMatch 410 ^/lumion\-portable\-tool\-full\-x32x64\-windows\-11\-mega/?$
+RedirectMatch 410 ^/aida64\-extreme\-business\-full\-portable\-product\-key\-final\-final/?$
+RedirectMatch 410 ^/winrar\-7\-11\-freeactivated\-patch\-x64\-lifetime\-tested/?$
+RedirectMatch 410 ^/easeus\-data\-recovery\-crack\-product\-key\-clean\-x64\-lifetime\-instant/?$
+RedirectMatch 410 ^/kmspico\-office\-2021\-freeactivated\-no\-virus\-clean\-verified/?$
+RedirectMatch 410 ^/mobile\-master\-portable\-only\-lifetime\-no\-virus/?$
+RedirectMatch 410 ^/adobe\-after\-effects\-2023\-crack\-for\-pc\-patch\-100\-worked/?$
+RedirectMatch 410 ^/coreldraw\-freeactivated\-100\-worked\-x32\-x64\-100\-worked\-ultimate/?$
+RedirectMatch 410 ^/elcomsoft\-wireless\-security\-auditor\-professional\-crack\-keygen\-clean\-no\-virus\-premium/?$
+RedirectMatch 410 ^/pdffactory\-pro\-full\-full\-activated\-final\-final\-unlimited/?$
+RedirectMatch 410 ^/setup\-factory\-crack\-keygen\-latest\-clean\-reddit/?$
+RedirectMatch 410 ^/eset\-nod32\-antivirus\-home\-security\-essential\-internet\-security\-full\-activated\-latest\-patch\-filecr/?$
+RedirectMatch 410 ^/trade\-ideas\-tradewaves\-crack\-activator\-windows\-10\-x86x64\-windows\-11\-tested/?$
+RedirectMatch 410 ^/adobe\-acrobat\-portable\-product\-key\-final\-x64\-patch\-tested/?$
+RedirectMatch 410 ^/recuva\-pro\-portable\-product\-key\-100\-worked\-stable\-mega/?$
+RedirectMatch 410 ^/easeus\-data\-recovery\-crack\-tool\-no\-virus\-x86x64\-stable\-2025/?$
+RedirectMatch 410 ^/matlab\-r2024b\-crack\-license\-key\-patch\-x32x64\-lifetime\-premium/?$
+RedirectMatch 410 ^/microsoft\-word\-crack\-only\-100\-worked\-stable/?$
+RedirectMatch 410 ^/readiris\-pro\-corporate\-portable\-crack\-100\-worked\-x64\-no\-virus\-bypass/?$
+RedirectMatch 410 ^/excel\-to\-pdf\-converter\-portable\-crack\-full\-windows\-genuine/?$
+RedirectMatch 410 ^/sketchup\-2022\-portable\-crack\-lifetime\-patch\-instant/?$
+RedirectMatch 410 ^/super\-internet\-tv\-crack\-exe\-stable\-x86\-x64\-windows\-filehippo/?$
+RedirectMatch 410 ^/sketchup\-2025\-crack\-keygen\-no\-virus\-lifetime\-mediafire/?$
+RedirectMatch 410 ^/cqg\-qtrader\-desktop\-crack\-100\-worked\-patch/?$
+RedirectMatch 410 ^/microsoft\-excel\-2025\-portable\-100\-worked\-100\-worked\-ultimate/?$
+RedirectMatch 410 ^/youcam\-365\-cracked\-100\-worked\-clean\-unlimited/?$
+RedirectMatch 410 ^/smartftp\-enterprise\-pre\-activated\-all\-versions\-latest\-premium/?$
+RedirectMatch 410 ^/matlab\-r2024b\-portable\-exe\-full\-windows\-11\-bypass/?$
+RedirectMatch 410 ^/pc\-services\-optimizer\-licenseactivated\-clean\-windows\-10\-2026/?$
+RedirectMatch 410 ^/solidworks\-2023\-portable\-activator\-stable\-latest\-filecr/?$
+RedirectMatch 410 ^/lumion\-crack\-portable\-full\-100\-worked\-premium/?$
+RedirectMatch 410 ^/deskscapes\-crack\-portable\-clean\-lifetime\-gdrive/?$
+RedirectMatch 410 ^/fl\-studio\-crack\-for\-pc\-final\-no\-virus\-tested/?$
+RedirectMatch 410 ^/gfi\-languard\-crack\-exe\-no\-virus\-latest\-instant/?$
+RedirectMatch 410 ^/office\-365\-full\-activated\-windows\-windows\-11\-github/?$
+RedirectMatch 410 ^/recuva\-full\-activated\-full\-patch\-reddit/?$
+RedirectMatch 410 ^/winrar\-7\-12\-portable\-activator\-full\-x32x64\-no\-virus\-github/?$
+RedirectMatch 410 ^/lumion\-12\-portable\-only\-universal\-full\-filehippo/?$
+RedirectMatch 410 ^/tmpgenc\-authoring\-works\-portable\-crack\-windows\-x64\-windows\-10\-bypass/?$
+RedirectMatch 410 ^/adobe\-premiere\-pro\-2023\-portable\-keygen\-patch\-x64\-windows\-11\-github/?$
+RedirectMatch 410 ^/adobe\-premiere\-pro\-portable\-full\-x86x64\-lifetime\-github/?$
+RedirectMatch 410 ^/filmora\-full\-activated\-full\-x86\-x64\-latest\-reddit/?$
+RedirectMatch 410 ^/tradingview\-desktop\-portable\-serial\-key\-final\-100\-worked\-zip/?$
+RedirectMatch 410 ^/cyberghost\-full\-activated\-no\-virus\-x64\-clean\-2026/?$
+RedirectMatch 410 ^/fl\-studio\-freeactivated\-patch\-no\-virus/?$
+RedirectMatch 410 ^/prezi\-premium\-portable\-tool\-latest\-lifetime\-2026/?$
+RedirectMatch 410 ^/ableton\-live\-live\-11\-portable\-lifetime\-patch\-2026/?$
+RedirectMatch 410 ^/adobe\-photoshop\-crack\-product\-key\-final\-x64\-100\-worked\-ultimate/?$
+RedirectMatch 410 ^/pdf4free\-portable\-stable\-final\-mega/?$
+RedirectMatch 410 ^/edrawings\-freeactivated\-patch\-x86x64\-windows\-11\-github/?$
+RedirectMatch 410 ^/mass\-downloader\-crack\-keygen\-full\-windows/?$
+RedirectMatch 410 ^/vegas\-pro\-full\-activated\-final\-x32\-x64\-clean\-filecr/?$
+RedirectMatch 410 ^/infix\-pro\-enterprise\-portable\-tool\-100\-worked\-x86x64\-lifetime\-2026/?$
+RedirectMatch 410 ^/puffin\-browser\-business\-crack\-for\-pc\-windows\-10\-patch/?$
+RedirectMatch 410 ^/express\-burn\-cd\-and\-dvd\-burner\-portable\-lifetime\-x86x64\-stable\-bypass/?$
+RedirectMatch 410 ^/macdrive\-standard\-activated\-no\-virus\-stable\-gdrive/?$
+RedirectMatch 410 ^/sierra\-chart\-cracked\-latest\-x86x64\-stable\-2026/?$
+RedirectMatch 410 ^/internet\-download\-manager\-idm\-freeactivated\-final\-no\-virus\-2026/?$
+RedirectMatch 410 ^/prezi\-premium\-activated\-final\-x64\-no\-virus\-unlimited/?$
+RedirectMatch 410 ^/avg\-pc\-tuneup\-crack\-license\-key\-clean\-windows\-11\-2026/?$
+RedirectMatch 410 ^/atas\-market\-analysis\-cracked\-clean\-stable\-2026/?$
+RedirectMatch 410 ^/microsoft\-word\-portable\-serial\-key\-lifetime\-x86x64\-no\-virus\-instant/?$
+RedirectMatch 410 ^/reget\-deluxe\-cracked\-latest\-latest\-2026/?$
+RedirectMatch 410 ^/avg\-pc\-tuneup\-portable\-full\-patch\-verified/?$
+RedirectMatch 410 ^/treesize\-professional\-treesize\-ultrasearch\-professional\-license\-portable\-only\-windows\-x86x64\-windows\-11\-2026/?$
+RedirectMatch 410 ^/escan\-internet\-security\-suite\-crack\-tool\-patch\-stable\-filehippo/?$
+RedirectMatch 410 ^/aomei\-partition\-assistant\-licenseactivated\-no\-virus\-latest\-filecr/?$
+RedirectMatch 410 ^/microsoft\-excel\-crack\-activator\-stable\-x86x64\-lifetime\-mediafire/?$
+RedirectMatch 410 ^/recuva\-activated\-latest\-lifetime/?$
+RedirectMatch 410 ^/ibm\-spss\-statisticsbase\-activated\-100\-worked\-x32\-x64\-lifetime\-instant/?$
+RedirectMatch 410 ^/lumion\-2023\-cracked\-100\-worked\-x86\-x64\-full\-mega/?$
+RedirectMatch 410 ^/edrawings\-portable\-product\-key\-no\-virus\-x86\-x64\-full\-gdrive/?$
+RedirectMatch 410 ^/webcammax\-ultimate\-crack\-serial\-key\-patch\-x32x64\-lifetime\-instant/?$
+RedirectMatch 410 ^/universal\-maps\-downloader\-crack\-clean\-x86\-x64\-windows\-11\-tested/?$
+RedirectMatch 410 ^/ccleaner\-portable\-keygen\-clean\-x64\-100\-worked\-2026/?$
+RedirectMatch 410 ^/anti\-porn\-licenseactivated\-100\-worked\-x32\-x64\-full/?$
+RedirectMatch 410 ^/youtube\-browser\-crack\-tool\-lifetime\-x64\-lifetime/?$
+RedirectMatch 410 ^/sierra\-chart\-crack\-product\-key\-windows\-11\-x86x64\-lifetime/?$
+RedirectMatch 410 ^/editplus\-30\-user\-license\-activated\-patch\-latest\-2025/?$
+RedirectMatch 410 ^/ssdlife\-family\-commercial\-portable\-crack\-stable\-patch\-filehippo/?$
+RedirectMatch 410 ^/topaz\-ai\-6\-crack\-product\-key\-final\-stable\-mega/?$
+RedirectMatch 410 ^/connectify\-hotspot\-crack\-portable\-final\-x32\-x64\-latest\-2026/?$
+RedirectMatch 410 ^/microsoft\-word\-cracked\-latest\-x86x64\-100\-worked\-unlimited/?$
+RedirectMatch 410 ^/total\-commander\-crack\-100\-worked\-x32x64\-full\-premium/?$
+RedirectMatch 410 ^/express\-burn\-cd\-and\-dvd\-burner\-crack\-serial\-key\-universal\-patch\-2026/?$
+RedirectMatch 410 ^/autocad\-electrical\-license\-activated\-100\-worked\-x32\-x64\-no\-virus/?$
+RedirectMatch 410 ^/matlab\-r2023b\-crack\-exe\-patch\-x86x64\-windows\-verified/?$
+RedirectMatch 410 ^/adobe\-premiere\-pro\-2023\-crack\-exe\-no\-virus\-patch\-unlimited/?$
+RedirectMatch 410 ^/presentation\-assistant\-pro\-crack\-portable\-100\-worked\-x64\-100\-worked\-zip/?$
+RedirectMatch 410 ^/winx\-dvd\-ripper\-platinum\-full\-activated\-clean\-patch/?$
+RedirectMatch 410 ^/anydesk\-2023\-crack\-exe\-windows\-11\-patch\-premium/?$
+RedirectMatch 410 ^/hd\-tune\-pro\-portable\-serial\-key\-clean\-lifetime\-reddit/?$
+RedirectMatch 410 ^/adobe\-premiere\-pro\-2023\-portable\-tool\-100\-worked\-final\-2025/?$
+RedirectMatch 410 ^/vb\-decompiler\-developer\-full\-activated\-lifetime\-windows\-11\-filecr/?$
+RedirectMatch 410 ^/solidworks\-portable\-exe\-windows\-x32\-x64\-no\-virus\-github/?$
+RedirectMatch 410 ^/adfender\-crack\-license\-key\-100\-worked\-no\-virus/?$
+RedirectMatch 410 ^/mobiledit\-phone\-manager\-crack\-windows\-lifetime\-github/?$
+RedirectMatch 410 ^/sketchup\-vray\-crack\-serial\-key\-patch\-stable/?$
+RedirectMatch 410 ^/easeus\-data\-recovery\-18\-licenseactivated\-lifetime\-no\-virus\-reddit/?$
+RedirectMatch 410 ^/pdfcamp\-developer\-crack\-tool\-patch\-full/?$
+RedirectMatch 410 ^/office\-365\-plus\-portable\-only\-latest\-patch\-2026/?$
+RedirectMatch 410 ^/microsoft\-word\-crack\-activator\-windows\-11\-x86\-x64\-latest\-2025/?$
+RedirectMatch 410 ^/sketchup\-portable\-serial\-key\-windows\-11\-x32\-x64\-clean\-multilingual/?$
+RedirectMatch 410 ^/microsoft\-office\-portable\-crack\-windows\-11\-windows\-10\-genuine/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019/?$
+RedirectMatch 410 ^/adobe\-acrobat\-2025\-crack\-portable\-100\-worked\-100\-worked/?$
+RedirectMatch 410 ^/easeus\-data\-recovery\-portable\-license\-key\-windows\-100\-worked/?$
+RedirectMatch 410 ^/internet\-download\-manager\-idm\-crack\-only\-latest\-x86x64\-windows\-mediafire/?$
+RedirectMatch 410 ^/topaz\-ai\-freeactivated\-final\-stable/?$
+RedirectMatch 410 ^/teamviewer\-premium\-crack\-for\-pc\-clean\-x86\-x64\-lifetime\-2025/?$
+RedirectMatch 410 ^/licensecrawler\-engineer\-portable\-only\-no\-virus\-x86x64\-latest\-mega/?$
+RedirectMatch 410 ^/debunking\-gambling\-myths\-which\-are\-true\-and\-which/?$
+RedirectMatch 410 ^/daemon\-tools\-portable\-serial\-key\-no\-virus\-full\-gdrive/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-2/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-3/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-4/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-5/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-6/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-7/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-8/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-9/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-10/?$
+RedirectMatch 410 ^/coronavirus\-disease\-2019\-11/?$
+RedirectMatch 410 ^/famous\-gamblers\-who\-are\-the\-boldest\-in\-the\-gaming/?$
+RedirectMatch 410 ^/anydesk\-portable\-only\-stable\-x64\-lifetime\-verified/?$
+RedirectMatch 410 ^/futuras\-tendencias\-en\-el\-juego\-hacia\-donde\-se/?$
+RedirectMatch 410 ^/winnen\-met\-strategie\-onmisbare\-tips\-voor\-gokkers/?$
+RedirectMatch 410 ^/recuva\-crack\-for\-pc\-latest\-lifetime\-2025/?$
+RedirectMatch 410 ^/lightlogger\-keylogger\-portable\-activator\-full\-x32\-x64\-clean\-filehippo/?$
+RedirectMatch 410 ^/endnote\-full\-license\-crack\-product\-key\-clean\-x64\-no\-virus/?$
+RedirectMatch 410 ^/navigating\-the\-maze\-of\-legal\-regulations\-in/?$
+RedirectMatch 410 ^/microsoft\-word\-office\-crack\-serial\-key\-stable\-x86x64\-100\-worked\-reddit/?$
+RedirectMatch 410 ^/uninstall\-tool\-portable\-product\-key\-universal\-final\-2026/?$
+RedirectMatch 410 ^/adobe\-illustrator\-portable\-exe\-stable\-x64\-windows\-gdrive/?$
+RedirectMatch 410 ^/nano\-antivirus\-cracked\-windows\-10\-x32\-x64\-100\-worked/?$
+RedirectMatch 410 ^/winrar\-pre\-activated\-windows\-11\-stable/?$
+RedirectMatch 410 ^/recuva\-licenseactivated\-100\-worked\-x86\-x64\-clean/?$
+RedirectMatch 410 ^/recuva\-data\-recovery\-crack\-tool\-all\-versions\-full\-mediafire/?$
+RedirectMatch 410 ^/graphpad\-prism\-academic\-corporate\-portable\-tool\-patch\-stable\-zip/?$
+RedirectMatch 410 ^/esignal\-crack\-activator\-latest\-patch/?$
+RedirectMatch 410 ^/kmspico\-crack\-keygen\-full\-x86x64\-full\-ultimate/?$
+RedirectMatch 410 ^/recuva\-crack\-final\-full\-zip/?$
+RedirectMatch 410 ^/exploring\-the\-psychological\-triggers\-behind/?$
+RedirectMatch 410 ^/topaz\-ai\-sharpen\-portable\-crack\-stable\-x86\-x64\-lifetime\-zip/?$
+RedirectMatch 410 ^/autocad\-portable\-crack\-100\-worked\-x32x64\-latest\-filecr/?$
+RedirectMatch 410 ^/populaire\-variaties\-van\-gokspellen\-en\-hun/?$
+RedirectMatch 410 ^/technologie\-en\-de\-toekomst\-van\-gokken\-hoe/?$
+RedirectMatch 410 ^/de\-toekomst\-van\-casino\-x27\-s\-wat\-kunnen\-we\-8/?$
+RedirectMatch 410 ^/easeus\-data\-recovery\-2025\-crack\-lifetime\-x64\-full\-genuine/?$
+RedirectMatch 410 ^/culturele\-perspectieven\-op\-gokken\-in\-nederland\-een/?$
+RedirectMatch 410 ^/mastering\-game\-strategies\-essential\-tips\-for\-every/?$
+RedirectMatch 410 ^/online\-or\-offline\-which\-casino\-experience\-is\-right/?$
+RedirectMatch 410 ^/exploring\-ethical\-dilemmas\-in\-gambling\-a/?$
+RedirectMatch 410 ^/revolutionizing\-gambling\-emerging\-trends\-and/?$
+RedirectMatch 410 ^/hitmanpro\-crack\-license\-key\-stable\-x64\-stable\-mega/?$
+RedirectMatch 410 ^/sketchup\-2024\-full\-activated\-final\-x86\-x64\-latest\-2025/?$
+RedirectMatch 410 ^/vegas\-pro\-21\-crack\-only\-full\-patch\-instant/?$
+RedirectMatch 410 ^/solidworks\-crack\-keygen\-windows\-10\-latest\-bypass/?$
+
+# Block direct execution of PHP if any stray PHP is accidentally uploaded into this static site.
+<FilesMatch "\.php$">
+  Require all denied
+</FilesMatch>

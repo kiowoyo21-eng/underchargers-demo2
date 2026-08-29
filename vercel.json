@@ -3,6 +3,11 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/home-2",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/about-3",
       "destination": "/about",
       "permanent": true
@@ -23,23 +28,18 @@
       "permanent": true
     },
     {
-      "source": "/home-2",
-      "destination": "/",
+      "source": "/our-staff",
+      "destination": "/about",
       "permanent": true
     },
     {
-      "source": "/category/general",
-      "destination": "/",
+      "source": "/thanks",
+      "destination": "/thank-you",
       "permanent": true
     },
     {
-      "source": "/blog",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/post-1",
-      "destination": "/",
+      "source": "/welcome",
+      "destination": "/contact",
       "permanent": true
     }
   ],

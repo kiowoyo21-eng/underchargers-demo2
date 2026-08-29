@@ -1,23 +1,18 @@
-# Underchargers SEO & Security Migration Patch — v8.11
+# Underchargers v8.12 SEO Cleanup — production-ready
 
-## Added
-- Crawlable canonical pages: /about/, /services/, /franchise/, /contact/, /book/
-- 301 redirects for known legacy business URLs
-- robots.txt and sitemap.xml
-- Canonical, robots, Open Graph and Twitter metadata on homepage
-- Organization, WebSite and three AutoRepair branch JSON-LD entities
-- noindex on thank-you and 404 pages
-- Security response headers: HSTS, nosniff, SAMEORIGIN, strict referrer policy and restricted browser permissions
+Database audit found **13 published WordPress pages**, **5 demo/template posts**, and **208 compromised/spam published posts**.
 
-## Security migration rule
-Do not copy the old WordPress PHP installation, plugins, wp-admin, wp-includes, uploads containing executable files, or suspicious PHP into production. This patch is a clean static-site layer.
+## Key migration decisions
+- Preserve legitimate business URLs with one-hop 301 redirects where the slug changes.
+- Keep `/about/`, `/services/`, and `/franchise/` as real crawlable canonical pages with clean replacement content.
+- Do **not** redirect hacked/spam posts, `/blog/`, or `/category/general/` to the homepage. On Vercel they intentionally fall through to a real 404. At HostGator production cutover, the supplied rules return **410 Gone** for every known compromised/demo URL.
+- `/our-staff/` -> `/about/`; `/thanks/` -> `/thank-you`; `/welcome/` -> `/contact/`.
+- Clean static deployment only. Never copy old WordPress core/plugins/PHP into production.
 
-## Known compromised/spam indexing
-Public search currently exposes injected/spam blog content. Do not preserve those pages as content. The known blog/category/template routes in this patch redirect to the legitimate site. A complete spam-URL removal/410 list should be generated from the WordPress database/search index before final production cutover.
+## This package
+- PRODUCTION READY: index/follow enabled; sitemap points to underchargers.com.
+- Includes `LEGACY_URL_INVENTORY.csv` and `HOSTGATOR_PRODUCTION.htaccess`.
+- Includes local `hero-video.mp4` so the deployment is self-contained.
 
-## Before production
-1. Test all redirects on preview.
-2. Verify domain points to the intended deployment only after backup.
-3. Verify robots.txt and sitemap.xml over HTTPS.
-4. Add/verify Google Search Console ownership when access is available and submit sitemap.
-5. Monitor 404s and rankings after launch; add one-to-one redirects for any legitimate legacy URLs discovered.
+## Important
+The HostGator rules file is intentionally not named `.htaccess`. Do not activate it until the final production cutover and backup are complete.
