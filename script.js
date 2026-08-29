@@ -650,11 +650,11 @@ document.querySelectorAll('a').forEach(a=>{
   const image=modal.querySelector('#inclusion-modal-image');
   const closeBtn=modal.querySelector('.inclusion-modal-close');
   const items=[
-    ['Basic tools & equipment','Complete starter tools and equipment for your automotive service needs.','1IvePILJSYnnWYTOccAurQtPzI-hi_Xr3'],
-    ['Book of Standards','Proven systems and processes for consistent, first-class service quality.','1PsjQHtFG0rb7XDuxZmcjr-bewwqgJ5LQ'],
+    ['Basic tools & equipment','Complete starter tools and equipment for your automotive service needs.','15zngO5qUN01qbb0gLxZk6wW7IWlohoGy'],
+    ['Book of Standards','Proven systems and processes for consistent, first-class service quality.','1IvePILJSYnnWYTOccAurQtPzI-hi_Xr3'],
     ['Initial training','Hands-on initial training with the Underchargers technical team.','1owZ82iCICQoToeISN2d7hfp-kftGex5q'],
     ['Endorsed mechanics','Access to skilled and endorsed mechanics aligned with professional standards.','1tUv0poirBZod_zm6me1rxd6QSqK6YNz9'],
-    ['Supplier network','Direct access to a trusted supplier network for quality automotive parts.','15zngO5qUN01qbb0gLxZk6wW7IWlohoGy'],
+    ['Supplier network','Direct access to a trusted supplier network for quality automotive parts.','1PsjQHtFG0rb7XDuxZmcjr-bewwqgJ5LQ'],
     ['Marketing support','Marketing support for content, promotions, campaigns, and business growth.','1XFr9vgoPhE5v4ecWBk7c0w_QLenCs-SR']
   ];
   const close=()=>{modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';};
