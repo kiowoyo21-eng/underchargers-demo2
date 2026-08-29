@@ -460,7 +460,11 @@ document.querySelectorAll('a').forEach(a=>{
       btn.setAttribute('aria-label', `View Underchargers customer photo ${index + 1}`);
 
       const img = document.createElement('img');
-      img.src = driveDirect(item, 'drive_url', 'image');
+      {
+        const raw = item.drive_url || item.url || '';
+        const id = String(raw).match(/\/d\/([^/]+)/)?.[1] || String(raw).match(/[?&]id=([^&]+)/)?.[1] || '';
+        img.src = id ? `https://drive.google.com/thumbnail?id=${id}&sz=w2400` : driveDirect(item, 'drive_url', 'image');
+      }
       img.alt = item.caption || item.file_name || 'Underchargers customer and serviced vehicle';
       img.loading = index === 0 ? 'eager' : 'lazy';
       img.decoding = 'async';

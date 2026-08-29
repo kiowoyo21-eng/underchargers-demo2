@@ -1,6 +1,5 @@
+be_one_headline_reduced: True
+removed_requested_copy: True
+be_one_uses_thumbnail_endpoint: True
+be_one_export_download_removed: True
 script_syntax_ok: True
-hardcoded_be_one_assets_removed: True
-be_one_cms_renderer_present: True
-be_one_rebuild_event_present: True
-bundled_be_one_folder_removed: True
-service_ctas_still_messenger: True
