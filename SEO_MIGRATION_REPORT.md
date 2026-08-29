@@ -1,4 +1,4 @@
-# Underchargers v8.12 SEO Cleanup — staging
+# Underchargers v8.12 SEO Cleanup — production-ready
 
 Database audit found **13 published WordPress pages**, **5 demo/template posts**, and **208 compromised/spam published posts**.
 
@@ -10,7 +10,7 @@ Database audit found **13 published WordPress pages**, **5 demo/template posts**
 - Clean static deployment only. Never copy old WordPress core/plugins/PHP into production.
 
 ## This package
-- STAGING ONLY: site-wide X-Robots-Tag noindex + robots.txt Disallow /.
+- PRODUCTION READY: index/follow enabled; sitemap points to underchargers.com.
 - Includes `LEGACY_URL_INVENTORY.csv` and `HOSTGATOR_PRODUCTION.htaccess`.
 - Includes local `hero-video.mp4` so the deployment is self-contained.
 
