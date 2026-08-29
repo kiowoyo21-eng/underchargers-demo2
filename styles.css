@@ -949,3 +949,58 @@ body{font-size:18px}
 .be-one-card.media-unavailable{
   display:none!important;
 }
+
+
+/* V8.9.7 — Be One portrait framing */
+#be-one-stack .be-one-card img,
+.be-one-card img{
+  object-fit:cover!important;
+  object-position:center 18%!important;
+}
+@media(max-width:600px){
+  #be-one-stack .be-one-card img,
+  .be-one-card img{
+    object-position:center 14%!important;
+  }
+}
+
+
+/* V8.9.7 — Footer social icon styling from reference */
+.footer-social-icons{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:14px!important;
+  align-items:center!important;
+}
+.footer-social-icons a{
+  width:58px!important;
+  height:58px!important;
+  min-width:58px!important;
+  min-height:58px!important;
+  border-radius:50%!important;
+  background:#f4f4f1!important;
+  color:#090909!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+}
+.footer-social-icons a svg{
+  width:26px!important;
+  height:26px!important;
+  display:block!important;
+}
+@media(max-width:420px){
+  .footer-social-icons{
+    gap:9px!important;
+  }
+  .footer-social-icons a{
+    width:48px!important;
+    height:48px!important;
+    min-width:48px!important;
+    min-height:48px!important;
+  }
+  .footer-social-icons a svg{
+    width:22px!important;
+    height:22px!important;
+  }
+}

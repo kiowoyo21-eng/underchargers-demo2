@@ -1,7 +1,5 @@
-cms_still_primary: True
-verified_drive_fallback_added: True
-fallback_photo_count: 7
-drive_thumbnail_primary: True
-lh3_secondary_fallback: True
-empty_customer_photo_message_removed_as_failure_path: True
+be_one_upper_crop_priority: True
+social_icons_svg_replaced: True
+social_icon_count: 5
+white_circle_reference_style: True
 script_syntax_ok: True
