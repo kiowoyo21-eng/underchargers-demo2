@@ -1073,3 +1073,136 @@ body{font-size:18px}
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* V8.9.9 — Franchise inclusion modal layout fix */
+.inclusion-modal{
+  padding:24px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow-y:auto!important;
+}
+
+.inclusion-modal-card{
+  width:min(920px,94vw)!important;
+  max-height:90vh!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr)!important;
+  overflow:hidden!important;
+  border-radius:24px!important;
+  background:#0d0d0d!important;
+}
+
+.inclusion-modal-media{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  background:#080808!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+}
+
+.inclusion-modal-media img{
+  width:100%!important;
+  height:100%!important;
+  max-height:90vh!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+}
+
+.inclusion-modal-copy{
+  min-width:0!important;
+  padding:44px 38px 36px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  overflow:auto!important;
+}
+
+.inclusion-modal-copy .eyebrow{
+  margin-bottom:16px!important;
+}
+
+.inclusion-modal-copy h3{
+  font-size:clamp(34px,3.6vw,54px)!important;
+  line-height:.98!important;
+  margin:0 0 20px!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+
+.inclusion-modal-copy p{
+  font-size:clamp(16px,1.25vw,19px)!important;
+  line-height:1.55!important;
+  margin:0!important;
+}
+
+.inclusion-modal-close{
+  top:18px!important;
+  right:18px!important;
+  z-index:5!important;
+  background:rgba(8,8,8,.88)!important;
+  backdrop-filter:blur(10px)!important;
+}
+
+@media(max-width:820px){
+  .inclusion-modal{
+    padding:14px!important;
+    align-items:flex-start!important;
+  }
+
+  .inclusion-modal-card{
+    width:min(620px,96vw)!important;
+    max-height:none!important;
+    margin:auto!important;
+    display:block!important;
+    overflow:visible!important;
+  }
+
+  .inclusion-modal-media{
+    width:100%!important;
+    aspect-ratio:4/5!important;
+    height:auto!important;
+  }
+
+  .inclusion-modal-media img{
+    width:100%!important;
+    height:100%!important;
+    max-height:none!important;
+    object-fit:contain!important;
+  }
+
+  .inclusion-modal-copy{
+    padding:28px 24px 30px!important;
+    overflow:visible!important;
+  }
+
+  .inclusion-modal-copy h3{
+    font-size:clamp(30px,8vw,44px)!important;
+  }
+}
+
+@media(max-width:480px){
+  .inclusion-modal{
+    padding:8px!important;
+  }
+
+  .inclusion-modal-card{
+    width:100%!important;
+    border-radius:18px!important;
+  }
+
+  .inclusion-modal-copy{
+    padding:24px 18px 26px!important;
+  }
+
+  .inclusion-modal-close{
+    top:12px!important;
+    right:12px!important;
+  }
+}

@@ -1,7 +1,6 @@
-franchise_sheet_created: True
-franchise_sheet_rows: 6
-franchise_cards_now_show_images: True
-card_ratio: 4:5
-portrait_modal_fit: contain
-updated_drive_ids: True
+modal_desktop_two_column: True
+poster_fully_visible: True
+copy_no_longer_clipped: True
+mobile_stacks_cleanly: True
+modal_scroll_supported: True
 script_syntax_ok: True
