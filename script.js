@@ -650,12 +650,12 @@ document.querySelectorAll('a').forEach(a=>{
   const image=modal.querySelector('#inclusion-modal-image');
   const closeBtn=modal.querySelector('.inclusion-modal-close');
   const items=[
-    ['Basic tools & equipment','Core workshop tools and equipment form part of the operating setup.','1cvzjKzr6Djd2vdy90ZonkTxl2TVc3oah'],
-    ['Book of Standards','The operating system documents the service and brand standards used across the network.','1tb4kmBkcLSQdeEVEBaUGa3bEuP54W5Gh'],
-    ['Initial training','Initial training helps the franchise team prepare for Underchargers operating standards.','1ZwZeKNDNMUboi0AUpVyj_lnrbnx8gV2J'],
-    ['Endorsed mechanics','Staffing support includes access to endorsed mechanics for branch operations.','1wAa3RotOSS-QsmhK4Et6ibyX_x9zxQvk'],
-    ['Supplier network','The franchise system includes access to the established supplier network.','1D7a7BPWKk4EVEMp2QtuICdS-i2_4Gxwn'],
-    ['Marketing support','Brand and marketing support helps the branch launch and communicate consistently.','14oMnTqdnYDmusI5qPEuw6WohO9gPmJ9Q']
+    ['Basic tools & equipment','Complete starter tools and equipment for your automotive service needs.','1IvePILJSYnnWYTOccAurQtPzI-hi_Xr3'],
+    ['Book of Standards','Proven systems and processes for consistent, first-class service quality.','1PsjQHtFG0rb7XDuxZmcjr-bewwqgJ5LQ'],
+    ['Initial training','Hands-on initial training with the Underchargers technical team.','1owZ82iCICQoToeISN2d7hfp-kftGex5q'],
+    ['Endorsed mechanics','Access to skilled and endorsed mechanics aligned with professional standards.','1tUv0poirBZod_zm6me1rxd6QSqK6YNz9'],
+    ['Supplier network','Direct access to a trusted supplier network for quality automotive parts.','15zngO5qUN01qbb0gLxZk6wW7IWlohoGy'],
+    ['Marketing support','Marketing support for content, promotions, campaigns, and business growth.','1XFr9vgoPhE5v4ecWBk7c0w_QLenCs-SR']
   ];
   const close=()=>{modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';};
   document.querySelectorAll('.inclusion-item').forEach((btn,i)=>btn.addEventListener('click',()=>{

@@ -1,5 +1,7 @@
-be_one_upper_crop_priority: True
-social_icons_svg_replaced: True
-social_icon_count: 5
-white_circle_reference_style: True
+franchise_sheet_created: True
+franchise_sheet_rows: 6
+franchise_cards_now_show_images: True
+card_ratio: 4:5
+portrait_modal_fit: contain
+updated_drive_ids: True
 script_syntax_ok: True
