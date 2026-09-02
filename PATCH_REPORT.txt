@@ -42,3 +42,13 @@ New files:
 - assets/branches/UC_QC.jpg
 - assets/branches/UC_Manda.png
 - assets/branches/UC_LP.png
+
+
+REVIEW PATCH
+- Restored "Inquiry" as the navigation label.
+- Inquiry copy now uses: FREE CONSULTATION WITH OUR EXPERT MECHANIC + approved customer-focused paragraph.
+- Gold service CTAs now read: FREE CONSULTATION WITH OUR EXPERT.
+- Viber icon replaced with a local app-style Viber logo asset.
+- Restored the original home Booking layout and flow; only the approved booking opener copy was changed.
+- Booking calendar no longer invents blocked/available dates; future dates are treated as preferred dates until the live backend is connected.
+- Restored data-channel click handling removed by the previous patch.

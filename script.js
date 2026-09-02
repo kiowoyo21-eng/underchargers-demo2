@@ -125,11 +125,77 @@ case 'messenger': {
 case 'sms': return window.location.href=`sms:${s.phone}${isIOS()?'&':'?'}body=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`;
   case 'viber': return appFirst(`viber://chat?number=${encodeURIComponent(s.viberPhone)}`,'https://www.viber.com/');
 }}
+document.addEventListener('click',e=>{
+  const a=e.target.closest?.('a[data-channel]');
+  if(!a)return;
+  e.preventDefault();
+  openChannel(a.dataset.channel,{source:a.dataset.source||'website',cta:a.dataset.cta||'contact'});
+});
 document.querySelectorAll('[data-map]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();window.open(CONFIG.maps[a.dataset.map],'_blank','noopener');}));
 
 // Franchise front-end demo submit.
 const franchise=document.getElementById('franchise-form');
 if(franchise) franchise.addEventListener('submit',e=>{e.preventDefault();if(!franchise.reportValidity())return;window.location.href=franchise.dataset.success||'/thank-you';});
+
+
+// Booking flow: preserve the original Underchargers UI while the live scheduling backend is still pending.
+// Dates shown here are selectable preferences only; this frontend does not claim live availability.
+const branchButtons=[...document.querySelectorAll('.branch-choice')];
+const calendarCard=document.getElementById('calendar-card');
+const calendarGrid=document.getElementById('calendar-grid');
+const calendarTitle=document.getElementById('calendar-title');
+const calendarStep=document.getElementById('calendar-step');
+const detailsStep=document.getElementById('details-step');
+const bookingForm=document.getElementById('booking-form');
+const bookingBranchInput=document.getElementById('booking-branch');
+const bookingDateInput=document.getElementById('booking-date');
+const calendarBranchNote=document.getElementById('calendar-branch-note');
+const bookingSummary=document.getElementById('booking-summary');
+let selectedBranch=''; let selectedDate='';
+const today=new Date(); today.setHours(0,0,0,0);
+let viewYear=today.getFullYear(), viewMonth=today.getMonth();
+function ymd(date){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
+function formatDate(date){return new Intl.DateTimeFormat('en-PH',{month:'long',day:'numeric',year:'numeric'}).format(date);}
+function renderCalendar(){
+  if(!calendarGrid||!calendarTitle)return;
+  const first=new Date(viewYear,viewMonth,1),days=new Date(viewYear,viewMonth+1,0).getDate(),start=first.getDay();
+  calendarTitle.textContent=new Intl.DateTimeFormat('en-PH',{month:'long',year:'numeric'}).format(first);
+  calendarGrid.innerHTML='';
+  for(let i=0;i<start;i++){const empty=document.createElement('button');empty.type='button';empty.className='calendar-day empty';empty.tabIndex=-1;empty.disabled=true;calendarGrid.appendChild(empty);}
+  for(let day=1;day<=days;day++){
+    const date=new Date(viewYear,viewMonth,day);const button=document.createElement('button');button.type='button';button.className='calendar-day';button.textContent=day;
+    if(date<today||!selectedBranch)button.disabled=true;
+    const dateValue=ymd(date);if(selectedDate===dateValue)button.classList.add('selected');
+    button.addEventListener('click',()=>selectDate(date));calendarGrid.appendChild(button);
+  }
+}
+function selectBranch(btn){
+  selectedBranch=btn.dataset.branch||'';selectedDate='';
+  branchButtons.forEach(b=>{const active=b===btn;b.classList.toggle('selected',active);b.setAttribute('aria-checked',String(active));});
+  calendarCard?.classList.remove('is-locked');calendarStep?.setAttribute('aria-disabled','false');detailsStep?.setAttribute('aria-disabled','true');bookingForm?.classList.add('is-locked');
+  if(bookingBranchInput)bookingBranchInput.value=selectedBranch;if(bookingDateInput)bookingDateInput.value='';
+  if(calendarBranchNote)calendarBranchNote.textContent=`Choose your preferred date for ${selectedBranch}. Live availability will be confirmed when scheduling is connected.`;
+  if(bookingSummary)bookingSummary.textContent='Choose your preferred date to unlock customer and vehicle details.';
+  viewYear=today.getFullYear();viewMonth=today.getMonth();renderCalendar();
+  calendarStep?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function selectDate(date){
+  selectedDate=ymd(date);if(bookingDateInput)bookingDateInput.value=selectedDate;
+  detailsStep?.setAttribute('aria-disabled','false');bookingForm?.classList.remove('is-locked');
+  if(bookingSummary)bookingSummary.textContent=`${selectedBranch} · Preferred date: ${formatDate(date)}`;
+  renderCalendar();setTimeout(()=>detailsStep?.scrollIntoView({behavior:'smooth',block:'start'}),160);
+}
+branchButtons.forEach(btn=>btn.addEventListener('click',()=>selectBranch(btn)));
+document.getElementById('calendar-prev')?.addEventListener('click',()=>{const candidate=new Date(viewYear,viewMonth-1,1),min=new Date(today.getFullYear(),today.getMonth(),1);if(candidate<min)return;viewYear=candidate.getFullYear();viewMonth=candidate.getMonth();renderCalendar();});
+document.getElementById('calendar-next')?.addEventListener('click',()=>{const candidate=new Date(viewYear,viewMonth+1,1);viewYear=candidate.getFullYear();viewMonth=candidate.getMonth();renderCalendar();});
+renderCalendar();
+if(bookingForm)bookingForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const note=document.getElementById('booking-note');
+  if(!selectedBranch||!selectedDate){if(note)note.textContent='Choose a branch and preferred date first.';return;}
+  if(!bookingForm.reportValidity())return;
+  if(note){note.textContent='Your details have not been sent yet. Live appointment submission will be enabled when the Underchargers scheduling backend is connected.';note.style.color='#d8aa41';}
+});
 
 /* V3 interactions */
 (() => {
@@ -213,7 +279,7 @@ document.querySelectorAll('#services .media-placeholder, #services [data-image]'
 // Route Message Us / Consult Our Expert through the Messenger app-first flow.
 document.querySelectorAll('a').forEach(a=>{
   const text=(a.textContent||'').trim().toLowerCase();
-  if(text.includes('message us') || text.includes('consult our expert')){
+  if(text.includes('message us') || text.includes('consult our expert') || text.includes('free consultation with our expert')){
     a.dataset.channel='messenger';
     a.href='#';
     a.removeAttribute('target');
