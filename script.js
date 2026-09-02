@@ -55,7 +55,12 @@ function loadLocalImage(el, name, extraGradient='linear-gradient(180deg,rgba(0,0
   };
   img.src = src;
 }
-document.querySelectorAll('.media[data-image]').forEach(el => { if (!String(el.dataset.image||'').toLowerCase().startsWith('branch-')) loadLocalImage(el, el.dataset.image); });
+document.querySelectorAll('.media[data-image]').forEach(el => {
+  const name=String(el.dataset.image||'');
+  if(name.toLowerCase().startsWith('branch-')) {
+    if(el.dataset.defaultImage) loadLocalImage(el, el.dataset.defaultImage, 'linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.12))');
+  } else loadLocalImage(el, name);
+});
 
 // Engine brand photo selector.
 const enginePhoto = document.getElementById('engine-photo');
@@ -107,102 +112,24 @@ function appFirst(appUrl,webUrl){
   const started=Date.now(); window.location.href=appUrl;
   setTimeout(()=>{if(!document.hidden && Date.now()-started<2300) window.location.href=webUrl;},950);
 }
-function openChannel(type){const s=CONFIG.social;switch(type){
+function openChannel(type,context={}){const s=CONFIG.social;switch(type){
   case 'instagram': return isIOS() ? (window.location.href=`https://www.instagram.com/${s.instagramUsername}/`) : appFirst(`instagram://user?username=${s.instagramUsername}`,`https://www.instagram.com/${s.instagramUsername}/`);
 case 'messenger': {
-    const messengerWeb=`https://m.me/${s.messengerUsername}`;
-    // iPhone/iPad: use Meta's HTTPS universal link directly from the user tap.
-    // Do not try fb-messenger:// first on iOS; Safari/Meta handles the Messenger handoff.
-    if(isIOS()){
-      const iosMessenger=`fb-messenger-public://user-thread/514453112391852?intent_trigger=mme&source_id=1441792&nav=discover`;
-      return appFirst(iosMessenger,messengerWeb);
-    }
-    // Android: retain the native deep link that already opens the correct conversation.
-    return appFirst(`fb-messenger://user-thread/${s.messengerUsername}`,messengerWeb);
+    const source=context.source||'website';
+    const cta=context.cta||'messenger';
+    const params=new URLSearchParams({source,cta});
+    const current=new URLSearchParams(window.location.search);
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid'].forEach(key=>{if(current.get(key))params.set(key,current.get(key));});
+    return window.location.href=`/message/?${params.toString()}`;
   }
 case 'sms': return window.location.href=`sms:${s.phone}${isIOS()?'&':'?'}body=${encodeURIComponent('Hi Underchargers, I have an inquiry about my vehicle.')}`;
   case 'viber': return appFirst(`viber://chat?number=${encodeURIComponent(s.viberPhone)}`,'https://www.viber.com/');
 }}
-const messengerModal=document.getElementById('messenger-modal');
-const openMessengerModal=()=>{messengerModal?.classList.add('is-open');messengerModal?.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';};
-const closeMessengerModal=()=>{messengerModal?.classList.remove('is-open');messengerModal?.setAttribute('aria-hidden','true');document.body.style.overflow='';};
-document.querySelectorAll('[data-channel]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();a.dataset.channel==='messenger'?openMessengerModal():openChannel(a.dataset.channel);}));
-messengerModal?.querySelector('.messenger-modal-close')?.addEventListener('click',closeMessengerModal);
-messengerModal?.querySelector('.messenger-modal-go')?.addEventListener('click',()=>{closeMessengerModal();openChannel('messenger');});
-messengerModal?.addEventListener('click',e=>{if(e.target===messengerModal)closeMessengerModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&messengerModal?.classList.contains('is-open'))closeMessengerModal();});
 document.querySelectorAll('[data-map]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();window.open(CONFIG.maps[a.dataset.map],'_blank','noopener');}));
 
 // Franchise front-end demo submit.
 const franchise=document.getElementById('franchise-form');
 if(franchise) franchise.addEventListener('submit',e=>{e.preventDefault();if(!franchise.reportValidity())return;window.location.href=franchise.dataset.success||'/thank-you';});
-
-// Booking flow: branch -> calendar -> customer details.
-const branchButtons=[...document.querySelectorAll('.branch-choice')];
-const calendarCard=document.getElementById('calendar-card');
-const calendarGrid=document.getElementById('calendar-grid');
-const calendarTitle=document.getElementById('calendar-title');
-const calendarStep=document.getElementById('calendar-step');
-const detailsStep=document.getElementById('details-step');
-const bookingForm=document.getElementById('booking-form');
-const bookingBranchInput=document.getElementById('booking-branch');
-const bookingDateInput=document.getElementById('booking-date');
-const calendarBranchNote=document.getElementById('calendar-branch-note');
-const bookingSummary=document.getElementById('booking-summary');
-let selectedBranch=''; let selectedBranchCode=''; let selectedDate='';
-const today=new Date(); today.setHours(0,0,0,0);
-let viewYear=today.getFullYear(), viewMonth=today.getMonth();
-
-// UI-only demo unavailable dates by branch. Replace with backend availability later.
-const demoBlocked={qc:[3,10,17],md:[5,12,19],lp:[7,14,21]};
-function ymd(date){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
-function formatDate(date){return new Intl.DateTimeFormat('en-PH',{month:'long',day:'numeric',year:'numeric'}).format(date);}
-function renderCalendar(){
-  if(!calendarGrid)return;
-  const first=new Date(viewYear,viewMonth,1), days=new Date(viewYear,viewMonth+1,0).getDate(), start=first.getDay();
-  calendarTitle.textContent=new Intl.DateTimeFormat('en-PH',{month:'long',year:'numeric'}).format(first);
-  calendarGrid.innerHTML='';
-  for(let i=0;i<start;i++){const empty=document.createElement('button');empty.type='button';empty.className='calendar-day empty';empty.tabIndex=-1;calendarGrid.appendChild(empty);}
-  for(let day=1;day<=days;day++){
-    const date=new Date(viewYear,viewMonth,day); const button=document.createElement('button'); button.type='button'; button.className='calendar-day'; button.textContent=day;
-    const past=date<today; const blocked=demoBlocked[selectedBranchCode]?.includes(day) && viewMonth===today.getMonth() && viewYear===today.getFullYear();
-    if(past||blocked||!selectedBranch){button.disabled=true;}
-    const dateValue=ymd(date);
-    if(selectedDate===dateValue) button.classList.add('selected');
-    button.addEventListener('click',()=>selectDate(date));
-    calendarGrid.appendChild(button);
-  }
-}
-function selectBranch(btn){
-  selectedBranch=btn.dataset.branch; selectedBranchCode=btn.dataset.branchCode; selectedDate='';
-  branchButtons.forEach(b=>b.classList.toggle('selected',b===btn));
-  branchButtons.forEach(b=>b.setAttribute('aria-checked',String(b===btn)));
-  calendarCard.classList.remove('is-locked'); calendarStep.setAttribute('aria-disabled','false');
-  detailsStep.setAttribute('aria-disabled','true'); bookingForm.classList.add('is-locked');
-  bookingBranchInput.value=selectedBranch; bookingDateInput.value='';
-  calendarBranchNote.textContent=`Showing dates for ${selectedBranch}.`;
-  bookingSummary.textContent='Choose your date to unlock customer and vehicle details.';
-  viewYear=today.getFullYear(); viewMonth=today.getMonth(); renderCalendar();
-  window.scrollTo({top:Math.max(0,calendarStep.getBoundingClientRect().top+window.scrollY-(document.querySelector('.site-header')?.offsetHeight||0)-16),behavior:'smooth'});
-}
-function selectDate(date){
-  selectedDate=ymd(date); bookingDateInput.value=selectedDate;
-  detailsStep.setAttribute('aria-disabled','false'); bookingForm.classList.remove('is-locked');
-  bookingSummary.textContent=`${selectedBranch} · ${formatDate(date)}`;
-  renderCalendar();
-  setTimeout(()=>window.scrollTo({top:Math.max(0,detailsStep.getBoundingClientRect().top+window.scrollY-(document.querySelector('.site-header')?.offsetHeight||0)-16),behavior:'smooth'}),180);
-}
-branchButtons.forEach(btn=>btn.addEventListener('click',()=>selectBranch(btn)));
-document.getElementById('calendar-prev')?.addEventListener('click',()=>{const candidate=new Date(viewYear,viewMonth-1,1);const min=new Date(today.getFullYear(),today.getMonth(),1);if(candidate<min)return;viewYear=candidate.getFullYear();viewMonth=candidate.getMonth();renderCalendar();});
-document.getElementById('calendar-next')?.addEventListener('click',()=>{const candidate=new Date(viewYear,viewMonth+1,1);viewYear=candidate.getFullYear();viewMonth=candidate.getMonth();renderCalendar();});
-renderCalendar();
-if(bookingForm) bookingForm.addEventListener('submit',e=>{
-  e.preventDefault();
-  if(!selectedBranch||!selectedDate){document.getElementById('booking-note').textContent='Choose a branch and date first.';return;}
-  if(!bookingForm.reportValidity())return;
-  const note=document.getElementById('booking-note'); note.textContent='Demo booking captured on-screen only. Backend connection is intentionally disabled for now.'; note.style.color='#d8aa41';
-});
-
 
 /* V3 interactions */
 (() => {
@@ -503,21 +430,9 @@ document.querySelectorAll('a').forEach(a=>{
   }
 
   function renderBranches(branches) {
-    if (!Array.isArray(branches) || !branches.length) return;
-    branches.forEach(branch => {
-      const label = normalize(branch.branch);
-      let target;
-      if (label.includes('las')) target = document.querySelector('[data-image="branch-las-pinas.jpg"]');
-      else if (label.includes('quezon')) target = document.querySelector('[data-image="branch-qc.jpg"]');
-      else if (label.includes('mandaluyong')) target = document.querySelector('[data-image="branch-mandaluyong.jpg"]');
-      const url = driveDirect(branch, 'drive_url', 'image');
-      if (target && url) {
-        target.style.backgroundImage = `url("${url}")`;
-        target.classList.add('has-drive-image');
-        const span = target.querySelector('span');
-        if (span) span.remove();
-      }
-    });
+    // Actual branch photography is intentionally pinned to the supplied local files in this build.
+    // Other CMS/Drive-powered sections continue to render normally.
+    return;
   }
 
   function renderTestimonialsFromCMS(items) {

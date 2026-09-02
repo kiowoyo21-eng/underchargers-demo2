@@ -1,0 +1,44 @@
+UNDERCHARGERS PATCH REPORT — V8.14
+
+Implemented:
+- Reworked Inquiry into FREE CONSULTATION with "Talk to Our Expert Mechanic".
+- Preferred contact order: Messenger, Viber, SMS, Instagram; Messenger emphasized as primary.
+- Added owned /message/ intermediary before Messenger. It preserves source/CTA + common UTM/fbclid values, emits landing/click-through events to dataLayer/custom events, and does not mark arrival as a completed inquiry.
+- Messenger handoff attempts app-first on iOS/Android and falls back to https://m.me/underchargersofficial; desktop uses the web destination.
+- Reworked booking copy and removed the prior fake demo availability/submission flow.
+- Added future-ready /book/ appointment shell with branch selection state and no fake availability.
+- Pinned supplied real branch photography to the correct locations:
+  * UC_QC.jpg -> Quezon City
+  * UC_Manda.png -> Mandaluyong
+  * UC_LP.png -> Las Piñas
+- Preserved CMS/Drive integration for unrelated dynamic sections; branch image CMS override is intentionally disabled in this build so the supplied actual photos remain authoritative.
+- Preserved services, franchise, showcase/carousel, SEO structure, responsive design, floating Message Us and footer/social areas.
+- Routed Messenger CTAs on auxiliary pages through the owned /message/ route.
+
+Security / quality checks:
+- JavaScript syntax checked with Node.
+- No duplicate IDs detected.
+- No img elements missing alt text detected.
+- No target="_blank" links missing noopener detected.
+- Internal patched routes and branch assets returned HTTP 200 in local checks.
+- No API keys/private-key patterns added.
+- Obsolete demo booking JS and legacy Messenger modal JS were removed.
+
+Changed existing files:
+- index.html
+- script.js
+- styles.css
+- contact/index.html
+- book/index.html
+- about/index.html (Messenger route only)
+- services/index.html (Messenger route only)
+- franchise/index.html (Messenger route only)
+- thank-you.html (Messenger route + obsolete modal removal)
+
+New files:
+- message/index.html
+- message/message.js
+- book/book.js
+- assets/branches/UC_QC.jpg
+- assets/branches/UC_Manda.png
+- assets/branches/UC_LP.png
