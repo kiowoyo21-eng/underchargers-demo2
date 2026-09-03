@@ -151,6 +151,14 @@ const bookingBranchInput=document.getElementById('booking-branch');
 const bookingDateInput=document.getElementById('booking-date');
 const calendarBranchNote=document.getElementById('calendar-branch-note');
 const bookingSummary=document.getElementById('booking-summary');
+const bookingModal=document.getElementById('booking-confirmation-modal');
+const bookingModalPanel=bookingModal?.querySelector('.booking-confirmation-panel');
+const bookingModalClose=document.getElementById('booking-confirmation-close');
+const bookingModalConfirm=document.getElementById('booking-confirmation-submit');
+const bookingNote=document.getElementById('booking-note');
+let bookingModalReturnFocus=null;
+let pendingBookingSnapshot=null;
+let bookingConfirmBusy=false;
 let selectedBranch=''; let selectedDate='';
 const today=new Date(); today.setHours(0,0,0,0);
 let viewYear=today.getFullYear(), viewMonth=today.getMonth();
@@ -170,6 +178,7 @@ function renderCalendar(){
   }
 }
 function selectBranch(btn){
+  markBookingDetailsChanged();
   selectedBranch=btn.dataset.branch||'';selectedDate='';
   branchButtons.forEach(b=>{const active=b===btn;b.classList.toggle('selected',active);b.setAttribute('aria-checked',String(active));});
   calendarCard?.classList.remove('is-locked');calendarStep?.setAttribute('aria-disabled','false');detailsStep?.setAttribute('aria-disabled','true');bookingForm?.classList.add('is-locked');
@@ -180,6 +189,7 @@ function selectBranch(btn){
   calendarStep?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function selectDate(date){
+  markBookingDetailsChanged();
   selectedDate=ymd(date);if(bookingDateInput)bookingDateInput.value=selectedDate;
   detailsStep?.setAttribute('aria-disabled','false');bookingForm?.classList.remove('is-locked');
   if(bookingSummary)bookingSummary.textContent=`${selectedBranch} · Preferred date: ${formatDate(date)}`;
@@ -189,12 +199,75 @@ branchButtons.forEach(btn=>btn.addEventListener('click',()=>selectBranch(btn)));
 document.getElementById('calendar-prev')?.addEventListener('click',()=>{const candidate=new Date(viewYear,viewMonth-1,1),min=new Date(today.getFullYear(),today.getMonth(),1);if(candidate<min)return;viewYear=candidate.getFullYear();viewMonth=candidate.getMonth();renderCalendar();});
 document.getElementById('calendar-next')?.addEventListener('click',()=>{const candidate=new Date(viewYear,viewMonth+1,1);viewYear=candidate.getFullYear();viewMonth=candidate.getMonth();renderCalendar();});
 renderCalendar();
-if(bookingForm)bookingForm.addEventListener('submit',e=>{
-  e.preventDefault();
-  const note=document.getElementById('booking-note');
-  if(!selectedBranch||!selectedDate){if(note)note.textContent='Choose a branch and preferred date first.';return;}
-  if(!bookingForm.reportValidity())return;
-  if(note){note.textContent='Your details have not been sent yet. Live appointment submission will be enabled when the Underchargers scheduling backend is connected.';note.style.color='#d8aa41';}
+function bookingModalFocusable(){
+  if(!bookingModal)return [];
+  return [...bookingModal.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')]
+    .filter(el=>!el.disabled&&el.getAttribute('aria-hidden')!=='true'&&el.offsetParent!==null);
+}
+function openBookingConfirmation(){
+  if(!bookingModal||bookingModal.classList.contains('is-open'))return;
+  pendingBookingSnapshot=bookingForm?Object.fromEntries(new FormData(bookingForm).entries()):null;
+  bookingModalReturnFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
+  bookingModal.classList.add('is-open');
+  bookingModal.setAttribute('aria-hidden','false');
+  document.body.classList.add('booking-modal-open');
+  requestAnimationFrame(()=>bookingModalClose?.focus());
+}
+function closeBookingConfirmation({restoreFocus=true,clearPending=true}={}){
+  if(!bookingModal)return;
+  bookingModal.classList.remove('is-open');
+  bookingModal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('booking-modal-open');
+  if(clearPending)pendingBookingSnapshot=null;
+  if(restoreFocus&&bookingModalReturnFocus?.isConnected)bookingModalReturnFocus.focus();
+}
+function markBookingDetailsChanged(){
+  if(!bookingForm||bookingForm.dataset.frontendConfirmed!=='true')return;
+  bookingForm.dataset.frontendConfirmed='false';
+  if(bookingNote){bookingNote.textContent='Changes made. Submit again to review and confirm your visit details.';bookingNote.style.color='#d8aa41';}
+}
+if(bookingForm){
+  bookingForm.addEventListener('input',markBookingDetailsChanged);
+  bookingForm.addEventListener('change',markBookingDetailsChanged);
+  bookingForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    if(!selectedBranch||!selectedDate){if(bookingNote){bookingNote.textContent='Choose a branch and preferred date first.';bookingNote.style.color='#d8aa41';}return;}
+    if(!bookingForm.reportValidity())return;
+    if(bookingConfirmBusy||bookingModal?.classList.contains('is-open'))return;
+    if(bookingNote)bookingNote.textContent='';
+    openBookingConfirmation();
+  });
+}
+bookingModalClose?.addEventListener('click',()=>closeBookingConfirmation());
+bookingModal?.addEventListener('click',e=>{if(e.target===bookingModal)closeBookingConfirmation();});
+bookingModalConfirm?.addEventListener('click',()=>{
+  if(bookingConfirmBusy||!pendingBookingSnapshot)return;
+  bookingConfirmBusy=true;
+  bookingModalConfirm.disabled=true;
+  if(bookingForm)bookingForm.dataset.frontendConfirmed='true';
+  closeBookingConfirmation({restoreFocus:false,clearPending:true});
+  if(bookingNote){
+    bookingNote.textContent='You confirmed these visit details. This build is not connected to the scheduling backend yet, so no appointment has been sent or stored.';
+    bookingNote.style.color='#d8aa41';
+    bookingNote.focus?.();
+  }
+  bookingConfirmBusy=false;
+  bookingModalConfirm.disabled=false;
+  bookingForm?.querySelector('.submit-btn')?.focus();
+});
+document.addEventListener('keydown',e=>{
+  if(!bookingModal?.classList.contains('is-open'))return;
+  if(e.key==='Escape'){
+    e.preventDefault();
+    closeBookingConfirmation();
+    return;
+  }
+  if(e.key!=='Tab')return;
+  const focusable=bookingModalFocusable();
+  if(!focusable.length){e.preventDefault();bookingModalPanel?.focus();return;}
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
 });
 
 /* V3 interactions */
